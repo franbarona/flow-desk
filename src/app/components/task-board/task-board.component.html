@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-gray-100 p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <h1 class="text-4xl font-bold text-gray-900">Gestor de Tareas</h1>
+      <button
+        (click)="openCreateModal()"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center gap-2"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          ></path>
+        </svg>
+        Nueva Tarea
+      </button>
+    </div>
+
+    <!-- Task Board -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Column: To Do -->
+      <div
+        [attr.data-status]="TaskStatus.TO_DO"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop(TaskStatus.TO_DO)"
+        (dragleave)="onDragEnd()"
+        class="bg-white rounded-lg shadow-md p-4 min-h-96"
+      >
+        <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-red-500">To Do</h2>
+        <div class="space-y-3">
+          <app-task-card
+            *ngFor="let task of getTasksByStatus(TaskStatus.TO_DO)"
+            [task]="task"
+            (dragstart)="onDragStart(task)"
+            (dragend)="onDragEnd()"
+          >
+          </app-task-card>
+          @if (getTasksByStatus(TaskStatus.TO_DO).length === 0) {
+          <div class="text-center py-8 text-gray-400">
+            <p>No hay tareas</p>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Column: In Progress -->
+      <div
+        [attr.data-status]="TaskStatus.IN_PROGRESS"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop(TaskStatus.IN_PROGRESS)"
+        (dragleave)="onDragEnd()"
+        class="bg-white rounded-lg shadow-md p-4 min-h-96"
+      >
+        <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-yellow-500">
+          In Progress
+        </h2>
+        <div class="space-y-3">
+          <app-task-card
+            *ngFor="let task of getTasksByStatus(TaskStatus.IN_PROGRESS)"
+            [task]="task"
+            (dragstart)="onDragStart(task)"
+            (dragend)="onDragEnd()"
+          >
+          </app-task-card>
+          @if (getTasksByStatus(TaskStatus.IN_PROGRESS).length === 0) {
+          <div class="text-center py-8 text-gray-400">
+            <p>No hay tareas</p>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Column: Done -->
+      <div
+        [attr.data-status]="TaskStatus.DONE"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop(TaskStatus.DONE)"
+        (dragleave)="onDragEnd()"
+        class="bg-white rounded-lg shadow-md p-4 min-h-96"
+      >
+        <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-500">Done</h2>
+        <div class="space-y-3">
+          <app-task-card
+            *ngFor="let task of getTasksByStatus(TaskStatus.DONE)"
+            [task]="task"
+            (dragstart)="onDragStart(task)"
+            (dragend)="onDragEnd()"
+          >
+          </app-task-card>
+          @if (getTasksByStatus(TaskStatus.DONE).length === 0) {
+          <div class="text-center py-8 text-gray-400">
+            <p>No hay tareas</p>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Task Modal -->
+  <app-task-create-modal
+    *ngIf="showCreateModal"
+    (close)="closeCreateModal()"
+    (taskCreated)="onTaskCreated()"
+  >
+  </app-task-create-modal>
+</div>

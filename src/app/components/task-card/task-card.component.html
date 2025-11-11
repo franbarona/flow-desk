@@ -1,0 +1,57 @@
+<div
+  class="bg-white border border-gray-200 rounded-lg p-4 cursor-move hover:shadow-lg transition-shadow duration-200"
+  draggable="true"
+  (dragstart)="onDragStart()"
+  (dragend)="onDragEnd()"
+  (click)="openDetailModal()"
+>
+  <!-- Priority Badge -->
+  <div class="flex justify-between items-start mb-2">
+    <span [class]="'text-xs font-semibold px-3 py-1 rounded-full ' + getPriorityColor()">
+      {{ task.priority }}
+    </span>
+    <span class="text-xs text-gray-500">{{ task.id }}</span>
+  </div>
+
+  <!-- Title -->
+  <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">{{ task.title }}</h3>
+
+  <!-- Description -->
+  <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ task.description }}</p>
+
+  <!-- Tags -->
+  <div class="flex flex-wrap gap-1 mb-3">
+    @for (tag of task.tags; track $index) {
+    <span
+      class="inline-flex items-center bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded"
+    >
+      {{ tag }}
+    </span>
+    }
+  </div>
+
+  <!-- Dates -->
+  <div class="text-xs text-gray-500 mb-3 space-y-1">
+    <div>Inicio: {{ task.startDate | date : 'dd/MM/yyyy' }}</div>
+    <div>Fin: {{ task.endDate | date : 'dd/MM/yyyy' }}</div>
+  </div>
+
+  <!-- Assigned Users -->
+  <div class="flex items-center gap-2">
+    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+      ></path>
+    </svg>
+    <span class="text-xs text-gray-600">
+      {{ task.assignedUsers.length }} {{ task.assignedUsers.length === 1 ? 'usuario' : 'usuarios' }}
+    </span>
+  </div>
+</div>
+
+<!-- Task Detail Modal -->
+<app-task-detail-modal *ngIf="showDetailModal" [task]="task" (close)="closeDetailModal()">
+</app-task-detail-modal>
