@@ -3,11 +3,12 @@ import { Task, TaskStatus } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { TaskCreateModalComponent } from '../task-create-modal/task-create-modal.component';
 import { TaskCardComponent } from '../task-card/task-card.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-task-board',
   templateUrl: './task-board.component.html',
-  imports: [TaskCardComponent, TaskCreateModalComponent],
+  imports: [TaskCardComponent, TaskCreateModalComponent, CommonModule],
 })
 export class TaskBoardComponent implements OnInit {
   tasks: Task[] = [];

@@ -53,5 +53,6 @@
 </div>
 
 <!-- Task Detail Modal -->
-<app-task-detail-modal *ngIf="showDetailModal" [task]="task" (close)="closeDetailModal()">
-</app-task-detail-modal>
+@if (showDetailModal) {
+<app-task-detail-modal [task]="task" (closeTask)="closeDetailModal()"> </app-task-detail-modal>
+}

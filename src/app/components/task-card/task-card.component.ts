@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Task, TaskPriority } from '../../models/task.model';
 import { TaskDetailModalComponent } from '../task-detail-modal/task-detail-modal.component';
@@ -6,7 +6,7 @@ import { TaskDetailModalComponent } from '../task-detail-modal/task-detail-modal
 @Component({
   selector: 'app-task-card',
   templateUrl: './task-card.component.html',
-  imports: [DatePipe, TaskDetailModalComponent],
+  imports: [DatePipe, TaskDetailModalComponent, CommonModule],
 })
 export class TaskCardComponent {
   @Input() task!: Task;

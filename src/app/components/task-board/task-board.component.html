@@ -31,14 +31,10 @@
       >
         <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-red-500">To Do</h2>
         <div class="space-y-3">
-          <app-task-card
-            *ngFor="let task of getTasksByStatus(TaskStatus.TO_DO)"
-            [task]="task"
-            (dragstart)="onDragStart(task)"
-            (dragend)="onDragEnd()"
-          >
+          @for (task of getTasksByStatus(TaskStatus.TO_DO); track $index) {
+          <app-task-card [task]="task" (dragstart)="onDragStart(task)" (dragend)="onDragEnd()">
           </app-task-card>
-          @if (getTasksByStatus(TaskStatus.TO_DO).length === 0) {
+          } @if (getTasksByStatus(TaskStatus.TO_DO).length === 0) {
           <div class="text-center py-8 text-gray-400">
             <p>No hay tareas</p>
           </div>
@@ -58,14 +54,10 @@
           In Progress
         </h2>
         <div class="space-y-3">
-          <app-task-card
-            *ngFor="let task of getTasksByStatus(TaskStatus.IN_PROGRESS)"
-            [task]="task"
-            (dragstart)="onDragStart(task)"
-            (dragend)="onDragEnd()"
-          >
+          @for (task of getTasksByStatus(TaskStatus.IN_PROGRESS); track $index) {
+          <app-task-card [task]="task" (dragstart)="onDragStart(task)" (dragend)="onDragEnd()">
           </app-task-card>
-          @if (getTasksByStatus(TaskStatus.IN_PROGRESS).length === 0) {
+          } @if (getTasksByStatus(TaskStatus.IN_PROGRESS).length === 0) {
           <div class="text-center py-8 text-gray-400">
             <p>No hay tareas</p>
           </div>
@@ -83,14 +75,10 @@
       >
         <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-500">Done</h2>
         <div class="space-y-3">
-          <app-task-card
-            *ngFor="let task of getTasksByStatus(TaskStatus.DONE)"
-            [task]="task"
-            (dragstart)="onDragStart(task)"
-            (dragend)="onDragEnd()"
-          >
+          @for (task of getTasksByStatus(TaskStatus.DONE); track $index) {
+          <app-task-card [task]="task" (dragstart)="onDragStart(task)" (dragend)="onDragEnd()">
           </app-task-card>
-          @if (getTasksByStatus(TaskStatus.DONE).length === 0) {
+          } @if (getTasksByStatus(TaskStatus.DONE).length === 0) {
           <div class="text-center py-8 text-gray-400">
             <p>No hay tareas</p>
           </div>
@@ -101,10 +89,8 @@
   </div>
 
   <!-- Create Task Modal -->
-  <app-task-create-modal
-    *ngIf="showCreateModal"
-    (close)="closeCreateModal()"
-    (taskCreated)="onTaskCreated()"
-  >
+  @if (showCreateModal) {
+  <app-task-create-modal (close)="closeCreateModal()" (taskCreated)="onTaskCreated()">
   </app-task-create-modal>
+  }
 </div>
