@@ -1,0 +1,65 @@
+/* Custom scrollbar styles */
+// :host ::ng-deep .overflow-scroll {
+//   scrollbar-width: thin;
+//   scrollbar-color: #525252 #171717;
+// }
+
+// :host ::ng-deep .overflow-scroll::-webkit-scrollbar {
+//   width: 8px;
+//   height: 8px;
+// }
+
+// :host ::ng-deep .overflow-scroll::-webkit-scrollbar-track {
+//   background: #171717;
+// }
+
+// :host ::ng-deep .overflow-scroll::-webkit-scrollbar-thumb {
+//   background-color: #525252;
+//   border-radius: 4px;
+// }
+
+// :host ::ng-deep .overflow-scroll::-webkit-scrollbar-thumb:hover {
+//   background-color: #737373;
+// }
+
+/* Drag and drop visual enhancements */
+.cursor-grab:active {
+  cursor: grabbing !important;
+}
+
+/* Animation for smooth transitions */
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Drop indicator styles */
+[data-column] {
+  transition: opacity 150ms ease-in-out;
+}
+
+[data-column].highlight {
+  opacity: 1 !important;
+}
+
+/* Layout animation styles - mimics Framer Motion layout */
+[data-card-id] {
+  will-change: transform;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .transition-all,
+  .transition-colors,
+  .card-enter {
+    transition: none;
+    animation: none;
+  }
+}

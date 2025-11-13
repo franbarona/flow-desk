@@ -1,17 +1,9 @@
 import { Routes } from '@angular/router';
-import { TaskBoardComponent } from './components/task-board/task-board.component';
+import { TaskBoard } from './components/task-board/task-board';
 
 export const routes: Routes = [
   {
     path: '',
-    component: TaskBoardComponent
+    component: TaskBoard
   },
-  {
-    path: 'tasks',
-    component: TaskBoardComponent
-  },
-  {
-    path: '**',
-    redirectTo: ''
-  }
 ];
