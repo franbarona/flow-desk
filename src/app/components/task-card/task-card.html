@@ -1,0 +1,51 @@
+<div class="space-y-4 mb-3">
+  <!-- Assigned Users -->
+  <div class="flex justify-between">
+    <div class="relative h-10">
+      @for (assignedUser of task.assignedUsers; track $index) {
+      <div
+        class="absolute w-10 rounded-full border-2 border-white overflow-hidden"
+        [style.left.px]="$index * 20"
+      >
+        @if (assignedUser?.avatarUrl) {
+        <img src="{{ assignedUser.avatarUrl }}" alt="" />
+        } @else {
+        <div class="bg-zinc-800">
+          {{ assignedUser.name.charAt(0) }}
+          {{ assignedUser.surnames.charAt(0) }}
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Priority Badge -->
+    <div class="flex justify-between items-start">
+      <span [class]="'text-xs font-semibold px-3 py-1 rounded-full ' + getPriorityColor()">
+        {{ task.priority }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <h3 class="font-bold text-gray-900 line-clamp-2">{{ task.title }}</h3>
+
+  <!-- Tags -->
+  <div class="flex flex-wrap gap-1">
+    @for (tag of task.tags; track $index) {
+    <span
+      class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-2xl"
+      [style.backgroundColor]="tag.color + '20'"
+      [style.color]="tag.color"
+    >
+      {{ tag.name }}
+    </span>
+    }
+  </div>
+
+  <!-- Dates -->
+  <div class="text-xs text-gray-500 flex items-center gap-2 font-medium">
+    <span class="material-symbols-rounded" style="font-size: medium"> calendar_today </span>
+    <div>{{ task.startDate | date : 'dd/MM/yyyy' }} - {{ task.endDate | date : 'dd/MM/yyyy' }}</div>
+  </div>
+</div>

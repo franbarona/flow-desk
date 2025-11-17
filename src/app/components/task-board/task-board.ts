@@ -1,80 +1,80 @@
-import { Component } from '@angular/core';
-import { Card } from '../../models/card.interface';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  Column,
+  CreateTaskRequest,
+  Tag,
+  Task,
+  UpdateTaskRequest,
+  User,
+} from '../../models/task.interface';
 import { CommonModule } from '@angular/common';
-import { AddCardComponent } from '../add-card/add-card.component';
+import { TaskCard } from '../task-card/task-card';
+import { MOCK_TASKS_DATA, MOCK_COLUMNS_DATA } from '../../constants/mocks';
+import { TaskModal } from '../task-modal/task-modal';
+import { TaskService } from '../../services/task.service';
+import { Subject, takeUntil } from 'rxjs';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-task-board',
   templateUrl: './task-board.html',
   styleUrls: ['./task-board.scss'],
-  imports: [CommonModule, AddCardComponent],
+  imports: [CommonModule, TaskCard, TaskModal],
 })
-export class TaskBoard {
-  cards: Card[] = [
-    // BACKLOG
-    { title: "Look into render bug in dashboard", id: "1", column: "backlog" },
-    { title: "SOX compliance checklist", id: "2", column: "backlog" },
-    { title: "[SPIKE] Migrate to Azure", id: "3", column: "backlog" },
-    { title: "Document Notifications service", id: "4", column: "backlog" },
-    // TODO
-    {
-      title: "Research DB options for new microservice",
-      id: "5",
-      column: "todo",
-    },
-    { title: "Postmortem for outage", id: "6", column: "todo" },
-    { title: "Sync with product on Q3 roadmap", id: "7", column: "todo" },
-    // DOING
-    {
-      title: "Refactor context providers to use Zustand",
-      id: "8",
-      column: "doing",
-    },
-    { title: "Add logging to daily CRON", id: "9", column: "doing" },
-    // DONE
-    {
-      title: "Set up DD dashboards for Lambda listener",
-      id: "10",
-      column: "done",
-    },
-  ];
+export class TaskBoard implements OnInit, OnDestroy {
+  tasks: Task[] = [];
+  users: User[] = [];
+  tags: Tag[] = [];
+  columns: Column[] = MOCK_COLUMNS_DATA;
 
-  columns = [
-    { 
-      id: 'backlog', 
-      title: 'BACKLOG', 
-      headingColor: 'text-neutral-500' 
-    },
-    { 
-      id: 'todo', 
-      title: 'TODO', 
-      headingColor: 'text-yellow-200' 
-    },
-    { 
-      id: 'doing', 
-      title: 'IN PROGRESS', 
-      headingColor: 'text-blue-200' 
-    },
-    { 
-      id: 'done', 
-      title: 'COMPLETE', 
-      headingColor: 'text-emerald-200' 
-    }
-  ];
+  isModalOpen = false;
+  selectedTask: Task | null = null;
 
   activeColumn: string | null = null;
   activeBurnBarrel: boolean = false;
   dragOverIndicator: string | null = null;
-  cardPositions: Map<string, DOMRect> = new Map();
+  taskPositions: Map<string, DOMRect> = new Map();
   isAnimating: boolean = false;
 
-  getFilteredCards(column: string): Card[] {
-    return this.cards.filter(card => card.column === column);
+  private readonly taskService = inject(TaskService);
+  private readonly modalService = inject(ModalService);
+  private readonly destroy$ = new Subject<void>();
+
+  ngOnInit(): void {
+    // Load initial data
+    this.taskService
+      .getUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((users) => (this.users = users));
+
+    this.taskService
+      .getTags()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((tags) => (this.tags = tags));
+
+    this.taskService
+      .getTasks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((tasks) => (this.tasks = tasks));
+
+    // Se suscribe a cambios del modal
+    this.modalService.isModalOpen$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isOpen) => (this.isModalOpen = isOpen));
   }
 
-  onDragStart(event: DragEvent, card: Card): void {
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  getFilteredTasks(column: string): Task[] {
+    return this.tasks.filter((task) => task.column === column);
+  }
+
+  onDragStart(event: DragEvent, task: Task): void {
     if (event.dataTransfer) {
-      event.dataTransfer.setData('text/plain', card.id);
+      event.dataTransfer.setData('text/plain', task.id);
       event.dataTransfer.effectAllowed = 'move';
     }
   }
@@ -94,7 +94,7 @@ export class TaskBoard {
       // Only clear if we're really leaving the column
       const target = event?.target as HTMLElement;
       const currentTarget = event?.currentTarget as HTMLElement;
-      
+
       if (currentTarget && !currentTarget.contains(target)) {
         this.activeColumn = null;
         this.clearHighlights();
@@ -106,98 +106,99 @@ export class TaskBoard {
 
   onDrop(event: DragEvent, targetColumn?: string): void {
     event.preventDefault();
-    const cardId = event.dataTransfer?.getData('text/plain');
-    
-    if (!cardId) return;
+    const taskId = event.dataTransfer?.getData('text/plain');
+
+    if (!taskId) return;
 
     if (targetColumn) {
       // Handle drop within column or between columns
-      this.handleCardDrop(cardId, targetColumn, event);
+      this.handleTaskDrop(taskId, targetColumn, event);
       this.activeColumn = null;
     } else {
-      // Delete card (burn barrel)
-      this.deleteCard(cardId);
+      // Delete task (burn barrel)
+      this.deleteTask(taskId);
       this.activeBurnBarrel = false;
     }
-    
+
     this.clearHighlights();
   }
 
-  private handleCardDrop(cardId: string, targetColumn: string, event: DragEvent): void {
+  private handleTaskDrop(taskId: string, targetColumn: string, event: DragEvent): void {
     // Capture positions before move
-    this.captureCardPositions();
-    
+    this.captureTaskPositions();
+
     const indicators = this.getIndicators(targetColumn);
     const { element } = this.getNearestIndicator(event, indicators);
-    const beforeId = element?.dataset['before'] || "-1";
+    const beforeId = element?.dataset['before'] || '-1';
 
-    if (beforeId === cardId) return; // Can't drop on itself
+    if (beforeId === taskId) return; // Can't drop on itself
 
-    let cardsCopy = [...this.cards];
-    let cardToMove = cardsCopy.find(c => c.id === cardId);
-    
-    if (!cardToMove) return;
+    let tasksCopy = [...this.tasks];
+    let taskToMove = tasksCopy.find((c) => c.id === taskId);
 
-    // Update card column
-    cardToMove = { ...cardToMove, column: targetColumn as any };
-    
-    // Remove card from current position
-    cardsCopy = cardsCopy.filter(c => c.id !== cardId);
+    if (!taskToMove) return;
 
-    if (beforeId === "-1") {
+    // Update task column
+    taskToMove = { ...taskToMove, column: targetColumn as any };
+
+    // Remove task from current position
+    tasksCopy = tasksCopy.filter((c) => c.id !== taskId);
+
+    if (beforeId === '-1') {
       // Drop at the end
-      cardsCopy.push(cardToMove);
+      tasksCopy.push(taskToMove);
     } else {
-      // Drop before specific card
-      const insertIndex = cardsCopy.findIndex(c => c.id === beforeId);
+      // Drop before specific task
+      const insertIndex = tasksCopy.findIndex((c) => c.id === beforeId);
       if (insertIndex >= 0) {
-        cardsCopy.splice(insertIndex, 0, cardToMove);
+        tasksCopy.splice(insertIndex, 0, taskToMove);
       } else {
-        cardsCopy.push(cardToMove);
+        tasksCopy.push(taskToMove);
       }
     }
 
-    this.cards = cardsCopy;
-    
+    this.tasks = tasksCopy;
+
     // Trigger layout animations after change
     setTimeout(() => this.animateLayoutChanges(), 0);
   }
 
-  private captureCardPositions(): void {
-    const cardElements = document.querySelectorAll('[data-card-id]');
-    cardElements.forEach((element) => {
-      const cardId = element.getAttribute('data-card-id');
-      if (cardId) {
-        this.cardPositions.set(cardId, element.getBoundingClientRect());
+  private captureTaskPositions(): void {
+    const taskElements = document.querySelectorAll('[data-task-id]');
+    taskElements.forEach((element) => {
+      const taskId = element.getAttribute('data-task-id');
+      if (taskId) {
+        this.taskPositions.set(taskId, element.getBoundingClientRect());
       }
     });
   }
 
   private animateLayoutChanges(): void {
     this.isAnimating = true;
-    const cardElements = document.querySelectorAll('[data-card-id]');
-    
-    cardElements.forEach((element) => {
-      const cardId = element.getAttribute('data-card-id');
-      if (cardId && this.cardPositions.has(cardId)) {
-        const oldRect = this.cardPositions.get(cardId)!;
+    const taskElements = document.querySelectorAll('[data-task-id]');
+
+    taskElements.forEach((element) => {
+      const taskId = element.getAttribute('data-task-id');
+      if (taskId && this.taskPositions.has(taskId)) {
+        const oldRect = this.taskPositions.get(taskId)!;
         const newRect = element.getBoundingClientRect();
-        
+
         const deltaY = oldRect.top - newRect.top;
         const deltaX = oldRect.left - newRect.left;
-        
+
         if (Math.abs(deltaY) > 1 || Math.abs(deltaX) > 1) {
           // Apply initial transform
           (element as HTMLElement).style.transform = `translate(${deltaX}px, ${deltaY}px)`;
           (element as HTMLElement).style.transition = 'none';
-          
+
           // Force reflow
           element.getBoundingClientRect();
-          
+
           // Animate to final position
-          (element as HTMLElement).style.transition = 'transform 300ms cubic-bezier(0.2, 0, 0.2, 1)';
+          (element as HTMLElement).style.transition =
+            'transform 300ms cubic-bezier(0.2, 0, 0.2, 1)';
           (element as HTMLElement).style.transform = 'translate(0, 0)';
-          
+
           // Clean up after animation
           setTimeout(() => {
             (element as HTMLElement).style.transition = '';
@@ -207,8 +208,8 @@ export class TaskBoard {
         }
       }
     });
-    
-    this.cardPositions.clear();
+
+    this.taskPositions.clear();
   }
 
   private highlightIndicator(event: DragEvent, column: string): void {
@@ -217,7 +218,7 @@ export class TaskBoard {
 
     const nearest = this.getNearestIndicator(event, indicators);
     if (nearest.element) {
-      nearest.element.style.opacity = "1";
+      nearest.element.style.opacity = '1';
       this.dragOverIndicator = nearest.element.dataset['before'] || null;
     }
   }
@@ -225,12 +226,15 @@ export class TaskBoard {
   private clearHighlights(): void {
     const allIndicators = document.querySelectorAll('[data-column]');
     allIndicators.forEach((indicator: Element) => {
-      (indicator as HTMLElement).style.opacity = "0";
+      (indicator as HTMLElement).style.opacity = '0';
     });
     this.dragOverIndicator = null;
   }
 
-  private getNearestIndicator(event: DragEvent, indicators: HTMLElement[]): { element: HTMLElement | null, offset: number } {
+  private getNearestIndicator(
+    event: DragEvent,
+    indicators: HTMLElement[]
+  ): { element: HTMLElement | null; offset: number } {
     const DISTANCE_OFFSET = 25;
 
     return indicators.reduce(
@@ -255,21 +259,89 @@ export class TaskBoard {
     return Array.from(document.querySelectorAll(`[data-column="${column}"]`)) as HTMLElement[];
   }
 
-  private deleteCard(cardId: string): void {
-    this.cards = this.cards.filter(card => card.id !== cardId);
+  private deleteTask(taskId: string): void {
+    this.tasks = this.tasks.filter((task) => task.id !== taskId);
   }
 
-  addCard(column: string, title: string): void {
-    const newCard: Card = {
-      id: Math.random().toString(),
-      title: title.trim(),
-      column: column as any
+  trackByTaskId(index: number, task: Task): string {
+    return task.id;
+  }
+
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedTask = null;
+    this.modalService.closeTaskModal();
+  }
+
+  /**
+   * Opens modal to edit a task when clicked
+   */
+  openTaskModal(task: Task, event?: MouseEvent) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.selectedTask = { ...task }; // Create a copy for editing
+    this.isModalOpen = true;
+
+    // Also update the modal service if other components need to know
+    this.modalService.openTaskModal({
+      users: this.users,
+      tags: this.tags,
+    });
+  }
+
+  /**
+   * Handles creation of new tasks
+   */
+  onTaskCreated(taskRequest: CreateTaskRequest) {
+    this.taskService
+      .createTask(taskRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newTask) => {
+          console.log('Task created successfully:', newTask);
+          // You can add a success notification here
+        },
+        error: (error) => {
+          console.error('Error creating task:', error);
+          // You can add error handling/notification here
+        },
+      });
+  }
+
+  onTaskUpdated(updatedTask: UpdateTaskRequest) {
+    const taskId = updatedTask.id;
+    const updatedTaskData: Partial<Task> = {
+      title: updatedTask.title,
+      description: updatedTask.description,
     };
-    this.cards = [...this.cards, newCard];
+    this.taskService
+      .updateTask(taskId, updatedTaskData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newTask) => {
+          console.log('Task created successfully:', newTask);
+          // You can add a success notification here
+        },
+        error: (error) => {
+          console.error('Error creating task:', error);
+          // You can add error handling/notification here
+        },
+      });
   }
 
-  trackByCardId(index: number, card: Card): string {
-    return card.id;
+  formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
   }
 }
-
