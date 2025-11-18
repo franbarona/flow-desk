@@ -45,7 +45,7 @@
 
   <!-- Dates -->
   <div class="text-xs text-gray-500 flex items-center gap-2 font-medium">
-    <span class="material-symbols-rounded" style="font-size: medium"> calendar_today </span>
+    <app-icon [icon]="'calendar_today'" [size]="16"></app-icon>
     <div>{{ task.startDate | date : 'dd/MM/yyyy' }} - {{ task.endDate | date : 'dd/MM/yyyy' }}</div>
   </div>
 </div>

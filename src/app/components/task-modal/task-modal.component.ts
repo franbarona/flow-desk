@@ -2,15 +2,17 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CreateTaskRequest, Tag, Task, UpdateTaskRequest, User } from '../../models/task.interface';
+import { IconComponent } from "../icon/icon.component";
+import { ButtonComponent } from '../button/button.component';
 
 @Component({
   selector: 'app-task-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './task-modal.html',
-  styleUrls: ['./task-modal.scss'],
+  templateUrl: './task-modal.component.html',
+  styleUrls: ['./task-modal.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule, IconComponent, ButtonComponent],
 })
-export class TaskModal implements OnInit, OnChanges {
+export class TaskModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
   @Input() users: User[] = [];
   @Input() tags: Tag[] = [];
@@ -34,7 +36,6 @@ export class TaskModal implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log("this.existingTask",changes)
     if (this.existingTask) {
       this.isEditMode = true;
       this.populateFormWithTask(this.existingTask);

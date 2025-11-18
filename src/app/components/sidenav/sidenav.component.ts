@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SidebarService } from '../../services/sidebar.service';
 import { ModalService } from '../../services/modal.service';
+import { IconComponent } from '../icon/icon.component';
 
 interface MenuItem {
   label: string;
@@ -14,9 +15,9 @@ interface MenuItem {
 
 @Component({
   selector: 'app-sidenav',
-  templateUrl: './sidenav.html',
-  styleUrls: ['./sidenav.scss'],
-  imports: [RouterModule, CommonModule],
+  templateUrl: './sidenav.component.html',
+  styleUrls: ['./sidenav.component.scss'],
+  imports: [RouterModule, CommonModule, IconComponent],
 })
 export class SidenavComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
@@ -30,7 +31,7 @@ export class SidenavComponent implements OnInit {
   menuItems: MenuItem[] = [
     {
       label: 'Task List',
-      route: '/',
+      route: '',
       icon: 'content_paste',
     },
     {
@@ -60,17 +61,17 @@ export class SidenavComponent implements OnInit {
     },
     {
       label: 'Tags',
-      route: '/tags',
+      route: 'tags',
       icon: 'style',
     },
     {
       label: 'Users',
-      route: '/users',
+      route: 'users',
       icon: 'people_alt',
     },
     {
       label: 'Settings',
-      route: '/settings',
+      route: 'settings',
       icon: 'settings',
     },
   ];

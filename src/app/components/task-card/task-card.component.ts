@@ -2,14 +2,15 @@ import { Component, Input, OnInit } from '@angular/core';
 import {User, EnumTaskPriority, Tag, Task} from '../../models/task.interface';
 import { CommonModule } from '@angular/common';
 import { MOCK_TAGS_DATA, MOCK_USERS_DATA } from '../../constants/mocks';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-task-card',
-  imports: [CommonModule],
-  templateUrl: './task-card.html',
-  styleUrl: './task-card.scss',
+  imports: [CommonModule, IconComponent],
+  templateUrl: './task-card.component.html',
+  styleUrl: './task-card.component.scss',
 })
-export class TaskCard implements OnInit {
+export class TaskCardComponent implements OnInit {
   @Input() task!: Task;
 
   ngOnInit(): void {

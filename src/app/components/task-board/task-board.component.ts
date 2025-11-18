@@ -8,20 +8,21 @@ import {
   User,
 } from '../../models/task.interface';
 import { CommonModule } from '@angular/common';
-import { TaskCard } from '../task-card/task-card';
-import { MOCK_TASKS_DATA, MOCK_COLUMNS_DATA } from '../../constants/mocks';
-import { TaskModal } from '../task-modal/task-modal';
+import { TaskCardComponent } from '../task-card/task-card.component';
+import { MOCK_COLUMNS_DATA } from '../../constants/mocks';
+import { TaskModalComponent } from '../task-modal/task-modal.component';
 import { TaskService } from '../../services/task.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ModalService } from '../../services/modal.service';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-task-board',
-  templateUrl: './task-board.html',
-  styleUrls: ['./task-board.scss'],
-  imports: [CommonModule, TaskCard, TaskModal],
+  templateUrl: './task-board.component.html',
+  styleUrls: ['./task-board.component.scss'],
+  imports: [CommonModule, TaskCardComponent, TaskModalComponent, IconComponent],
 })
-export class TaskBoard implements OnInit, OnDestroy {
+export class TaskBoardComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   users: User[] = [];
   tags: Tag[] = [];

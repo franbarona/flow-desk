@@ -16,7 +16,7 @@
           </span>
         </div>
         <div class="text-neutral-500">
-          <span class="material-icons-outlined"> more_vert </span>
+          <app-icon [icon]="'more_vert'" />
         </div>
       </div>
 
@@ -50,11 +50,23 @@
               class="cursor-grab rounded-xl shadow-xs bg-white p-3 active:cursor-grabbing transition-all duration-200 hover:shadow-lg hover:scale-[1.02] hover:cursor-pointer group"
             >
               <app-task-card [task]="task"></app-task-card>
-              
+
               <!-- Edit indicator - shows on hover -->
-              <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              <div
+                class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              >
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
                 </svg>
               </div>
             </div>
@@ -93,11 +105,10 @@
             clip-rule="evenodd"
           />
         </svg>
-        <!-- <span class="material-symbols-rounded" style="font-size: 2rem" clip-rule="evenodd"> delete_forever </span> -->
       </ng-container>
       <ng-template #trashIcon>
         <!-- Trash icon -->
-        <span class="material-symbols-rounded" style="font-size: 2rem"> delete </span>
+        <app-icon [icon]="'delete'" [size]="30"></app-icon>
       </ng-template>
     </div>
   </div>

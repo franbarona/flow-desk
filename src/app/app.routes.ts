@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
-import { TaskBoard } from './components/task-board/task-board';
+import { TaskBoardComponent } from './components/task-board/task-board.component';
+import { UsersView } from './views/users/users.view';
 
 export const routes: Routes = [
   {
     path: '',
-    component: TaskBoard
+    component: TaskBoardComponent
+  },
+  {
+    path: 'users',
+    component: UsersView
   },
 ];

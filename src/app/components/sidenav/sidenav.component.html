@@ -23,7 +23,7 @@
       class="w-full py-2.5 bg-lime-300 rounded-md cursor-pointer shadow-xs hover:shadow-lg hover:shadow-lime-100 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center gap-2"
       (click)="addNewTask()"
     >
-      <span class="material-icons-outlined" style="font-size: 20px"> add </span> Add new task
+      <app-icon [icon]="'add'" /> Add new task
     </button>
   </div>
 
@@ -38,15 +38,15 @@
             class="flex gap-2 items-center px-4 py-2 text-gray-800 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200 cursor-pointer"
           >
             @if(item.icon) {
-            <span class="material-icons-outlined">{{ item.icon }}</span>
+            <app-icon [icon]="item.icon" />
             }
             {{ item.label }}
             <span
-              class="material-icons-outlined ml-auto transition-transform duration-200"
+              class="ml-auto transition-transform duration-200"
               [class.rotate-180]="openSubmenus[i]"
-              style="font-size: 18px"
-              >expand_more</span
             >
+              <app-icon [icon]="'expand_more'" />
+            </span>
           </div>
           <ul
             class="mt-1 ml-6 space-y-1 transition-all duration-200 overflow-hidden"
@@ -59,12 +59,7 @@
                 class="flex gap-2 items-center px-4 py-2 text-gray-700 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200"
               >
                 @if(subItem.icon) {
-                <span
-                  class="material-icons-round"
-                  [style.color]="subItem.iconColor"
-                  style="font-size: 0.8rem"
-                  >{{ subItem.icon }}</span
-                >
+                <app-icon [icon]="subItem.icon" [color]="subItem.iconColor" />
                 }
                 {{ subItem.label }}
               </a>
@@ -78,7 +73,7 @@
           class="flex gap-2 items-center px-4 py-2 text-gray-700 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200"
         >
           @if(item.icon) {
-          <span class="material-symbols-rounded">{{ item.icon }}</span>
+          <app-icon [icon]="item.icon" />
           }
           {{ item.label }}
         </a>
