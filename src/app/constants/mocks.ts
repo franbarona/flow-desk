@@ -1,5 +1,5 @@
 import { User, Column, EnumTaskPriority, Tag, Task } from '../models/task.interface';
-
+import { Project } from '../models/project.interface';
 
 export const MOCK_USERS_DATA: User[] = [
   { id: 1, name: 'Carlos', surnames: 'Rodríguez', avatarUrl: 'users/user1.jpg' },
@@ -20,27 +20,34 @@ export const MOCK_TAGS_DATA: Tag[] = [
   { id: 6, name: 'Design system', color: '#A16207' },
 ];
 
+export const MOCK_PROJECTS_DATA: Project[] = [
+  { id: '1', name: 'Median', slug: 'median' },
+  { id: '2', name: 'Risen', slug: 'risen' },
+  { id: '3', name: 'Strata Insurance', slug: 'strata-insurance' },
+];
 
 export const MOCK_TASKS_DATA: Task[] = [
   // TODO
   {
     id: '5',
+    projectId: '1',
     title: 'Research DB options for new microservice',
     description: '',
     startDate: new Date(),
     endDate: new Date(),
-    column: 'todo',
+    status: 'todo',
     priority: EnumTaskPriority.LOW,
     tags: [MOCK_TAGS_DATA[1], MOCK_TAGS_DATA[2]],
     assignedUsers: [MOCK_USERS_DATA[1], MOCK_USERS_DATA[3]],
   },
   {
     id: '7',
+    projectId: '1',
     title: 'Sync with product on Q3 roadmap',
     description: '',
     startDate: new Date(),
     endDate: new Date(),
-    column: 'todo',
+    status: 'todo',
     priority: EnumTaskPriority.MEDIUM,
     tags: [MOCK_TAGS_DATA[2]],
     assignedUsers: [MOCK_USERS_DATA[0], MOCK_USERS_DATA[1], MOCK_USERS_DATA[3]],
@@ -48,22 +55,24 @@ export const MOCK_TASKS_DATA: Task[] = [
   // DOING
   {
     id: '8',
+    projectId: '1',
     title: 'Refactor context providers to use Zustand',
     description: '',
     startDate: new Date(),
     endDate: new Date(),
-    column: 'doing',
+    status: 'doing',
     priority: EnumTaskPriority.HIGH,
     tags: [MOCK_TAGS_DATA[2], MOCK_TAGS_DATA[3]],
     assignedUsers: [MOCK_USERS_DATA[4]],
   },
   {
     id: '9',
+    projectId: '1',
     title: 'Add logging to daily CRON',
     description: '',
     startDate: new Date(),
     endDate: new Date(),
-    column: 'doing',
+    status: 'doing',
     priority: EnumTaskPriority.LOW,
     tags: [MOCK_TAGS_DATA[3]],
     assignedUsers: [MOCK_USERS_DATA[6]],
@@ -71,11 +80,12 @@ export const MOCK_TASKS_DATA: Task[] = [
   // DONE
   {
     id: '10',
+    projectId: '1',
     title: 'Set up DD dashboards for Lambda listener',
     description: '',
     startDate: new Date(),
     endDate: new Date(),
-    column: 'done',
+    status: 'done',
     priority: EnumTaskPriority.MEDIUM,
     tags: [MOCK_TAGS_DATA[0], MOCK_TAGS_DATA[4]],
     assignedUsers: [MOCK_USERS_DATA[5], MOCK_USERS_DATA[6]],
@@ -83,10 +93,6 @@ export const MOCK_TASKS_DATA: Task[] = [
 ];
 
 export const MOCK_COLUMNS_DATA: Column[] = [
-  // {
-  //   id: 'backlog',
-  //   title: 'Backlog',
-  // },
   {
     id: 'todo',
     title: 'To Do',

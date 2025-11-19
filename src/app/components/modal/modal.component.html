@@ -1,0 +1,33 @@
+
+
+@if (isOpen) {
+<div class="fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Backdrop -->
+  <div
+    class="absolute inset-0 bg-black/50 bg-opacity-50 backdrop-blur-sm"
+    (click)="onBackdropClick($event)"
+  ></div>
+
+  <!-- Modal -->
+  <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 overflow-hidden">
+    <!-- Header -->
+    <div
+      class="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10"
+    >
+      <h2 class="text-xl font-semibold text-gray-900">
+        {{title}}
+        <!-- {{ isEditMode ? 'Edit Task ' + existingTask?.id : 'Create New Task' }} -->
+      </h2>
+      <button
+        type="button"
+        (click)="onClose()"
+        class="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+      >
+        <app-icon [icon]="'close'" [size]="24"></app-icon>
+      </button>
+    </div>
+    <ng-content></ng-content>
+  </div>
+</div>
+
+}

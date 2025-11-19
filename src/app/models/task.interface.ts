@@ -4,9 +4,10 @@ export interface Column {
 }
 export interface Task {
   id: string;
+  projectId?: string;
   title: string;
   description: string;
-  column: 'backlog' | 'todo' | 'doing' | 'done';
+  status: 'backlog' | 'todo' | 'doing' | 'done';
   priority: EnumTaskPriority;
   startDate: Date;
   endDate: Date;
@@ -21,7 +22,6 @@ export interface Tag {
   name: string;
   color: string;
 }
-
 
 export interface User {
   id: number;
@@ -40,21 +40,19 @@ export enum EnumTaskPriority {
   HIGH = 'High',
 }
 
-export interface CreateTaskRequest {
+export interface TaskRequest {
+  priority: EnumTaskPriority;
   title: string;
   description: string;
   startDate: string;
   endDate: string;
+  status: 'backlog' | 'todo' | 'doing' | 'done';
   assignedUserIds: number[];
   tagIds: number[];
 }
 
-export interface UpdateTaskRequest {
+export interface CreateTaskRequest extends TaskRequest {}
+
+export interface UpdateTaskRequest extends TaskRequest {
   id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  assignedUserIds: number[];
-  tagIds: number[];
 }

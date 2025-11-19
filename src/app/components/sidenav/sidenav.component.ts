@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SidebarService } from '../../services/sidebar.service';
 import { ModalService } from '../../services/modal.service';
 import { IconComponent } from '../icon/icon.component';
+import e from 'express';
 
 interface MenuItem {
   label: string;
@@ -17,23 +18,26 @@ interface MenuItem {
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.scss'],
-  imports: [RouterModule, CommonModule, IconComponent],
+  imports: [CommonModule, IconComponent, RouterModule], // ✅ Agregado RouterModule
 })
 export class SidenavComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly sidebarService = inject(SidebarService);
   private readonly modalService = inject(ModalService);
-  isModalOpen = false;
+  private readonly router = inject(Router);
+
+  currentRoute: string = '';
+
   get isOpen() {
     return this.sidebarService.isOpen;
   }
 
   menuItems: MenuItem[] = [
-    {
-      label: 'Task List',
-      route: '',
-      icon: 'content_paste',
-    },
+    // {
+    //   label: 'Task List',
+    //   route: '/tasks',
+    //   icon: 'content_paste',
+    // },
     {
       label: 'Projects',
       route: '/projects',
@@ -41,19 +45,19 @@ export class SidenavComponent implements OnInit {
       subItems: [
         {
           label: 'Median',
-          route: '/projects/median',
+          route: 'median',
           icon: 'square',
           iconColor: 'pink',
         },
         {
           label: 'Risen',
-          route: '/projects/risen',
+          route: 'risen',
           icon: 'square',
           iconColor: 'blue',
         },
         {
           label: 'Statra Insurance',
-          route: '/projects/strata-insurance',
+          route: 'strata-insurance',
           icon: 'square',
           iconColor: 'orange',
         },
@@ -61,17 +65,17 @@ export class SidenavComponent implements OnInit {
     },
     {
       label: 'Tags',
-      route: 'tags',
+      route: '/tags-management',
       icon: 'style',
     },
     {
       label: 'Users',
-      route: 'users',
+      route: '/user-management',
       icon: 'people_alt',
     },
     {
       label: 'Settings',
-      route: 'settings',
+      route: '/settings',
       icon: 'settings',
     },
   ];
@@ -79,29 +83,60 @@ export class SidenavComponent implements OnInit {
   openSubmenus: boolean[] = [];
 
   ngOnInit(): void {
-    // Verificar si estamos en el navegador
     if (isPlatformBrowser(this.platformId)) {
-      // En desktop, el sidebar está abierto por defecto
       if (window.innerWidth >= 1024) {
         this.openSidenav();
       } else {
         this.closeSidenav();
       }
     }
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentRoute = event.url;
+      }
+    });
     this.openSubmenus = new Array(this.menuItems.length).fill(true);
   }
 
+  // ✅ Solo para proyectos (subitems)
+  navigateToProject(slug: string) {
+    this.router.navigate(['/project', slug]);
+  }
+
+  // ✅ Para rutas normales
+  navigateToRoute(route: string, event?: Event) {
+    event?.stopPropagation();
+    this.router.navigate([route]);
+  }
+
   addNewTask() {
-    this.modalService.openTaskModal();
+    this.modalService.openModal();
+  }
+
+  isProjectActive(slug: string): boolean {
+    return this.currentRoute === `/project/${slug}`;
+  }
+
+  isRouteActive(route: string): boolean {
+    return this.currentRoute === route;
+  }
+
+  hasActiveSubItem(menuItem: MenuItem): boolean {
+    if (!menuItem.subItems) return false;
+
+    return menuItem.subItems.some((subItem) => this.currentRoute === `/project/${subItem.route}`);
+  }
+
+  isMenuItemActive(menuItem: MenuItem): boolean {
+    if (!menuItem.subItems) {
+      return this.isRouteActive(menuItem.route);
+    }
+    
+    return this.hasActiveSubItem(menuItem);
   }
 
   toggleSubmenu(index: number): void {
     this.openSubmenus[index] = !this.openSubmenus[index];
-  }
-
-  // Opcional: método para cerrar todos los submenús
-  closeAllSubmenus(): void {
-    this.openSubmenus.fill(false);
   }
 
   toggleSidenav(): void {

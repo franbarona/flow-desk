@@ -10,25 +10,27 @@ import {
 import { CommonModule } from '@angular/common';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import { MOCK_COLUMNS_DATA } from '../../constants/mocks';
-import { TaskModalComponent } from '../task-modal/task-modal.component';
 import { TaskService } from '../../services/task.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ModalService } from '../../services/modal.service';
 import { IconComponent } from '../icon/icon.component';
+import { TaskFormComponent } from '../task-form/task-form.component';
+import { ModalComponent } from '../modal/modal.component';
+import { ActivatedRoute } from '@angular/router';
+import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'app-task-board',
   templateUrl: './task-board.component.html',
   styleUrls: ['./task-board.component.scss'],
-  imports: [CommonModule, TaskCardComponent, TaskModalComponent, IconComponent],
+  imports: [CommonModule, TaskCardComponent, IconComponent, TaskFormComponent, ModalComponent],
 })
 export class TaskBoardComponent implements OnInit, OnDestroy {
+  projectId!: string;
   tasks: Task[] = [];
   users: User[] = [];
   tags: Tag[] = [];
   columns: Column[] = MOCK_COLUMNS_DATA;
-
-  isModalOpen = false;
   selectedTask: Task | null = null;
 
   activeColumn: string | null = null;
@@ -37,12 +39,34 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
   taskPositions: Map<string, DOMRect> = new Map();
   isAnimating: boolean = false;
 
+  private readonly route = inject(ActivatedRoute);
   private readonly taskService = inject(TaskService);
   private readonly modalService = inject(ModalService);
+  private readonly projectService = inject(ProjectService);
   private readonly destroy$ = new Subject<void>();
 
+  get isModalOpen() {
+    return this.modalService.isModalOpen;
+  }
+
   ngOnInit(): void {
-    // Load initial data
+    this.route.params.subscribe((params) => {
+      const projectSlug = params['id'];
+      this.projectService.getProjectsBySlug(projectSlug).subscribe((project) => {
+        if (project) {
+          this.projectId = project.id;
+          this.loadTaskBoardData();
+        }
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadTaskBoardData(): void {
     this.taskService
       .getUsers()
       .pipe(takeUntil(this.destroy$))
@@ -54,23 +78,13 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
       .subscribe((tags) => (this.tags = tags));
 
     this.taskService
-      .getTasks()
+      .getTasks(this.projectId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((tasks) => (this.tasks = tasks));
-
-    // Se suscribe a cambios del modal
-    this.modalService.isModalOpen$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((isOpen) => (this.isModalOpen = isOpen));
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   getFilteredTasks(column: string): Task[] {
-    return this.tasks.filter((task) => task.column === column);
+    return this.tasks.filter((task) => task.status === column);
   }
 
   onDragStart(event: DragEvent, task: Task): void {
@@ -140,7 +154,7 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     if (!taskToMove) return;
 
     // Update task column
-    taskToMove = { ...taskToMove, column: targetColumn as any };
+    taskToMove = { ...taskToMove, status: targetColumn as any };
 
     // Remove task from current position
     tasksCopy = tasksCopy.filter((c) => c.id !== taskId);
@@ -268,15 +282,9 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     return task.id;
   }
 
-  openModal() {
-    this.isModalOpen = true;
-  }
-
-  
   closeModal() {
-    this.isModalOpen = false;
     this.selectedTask = null;
-    this.modalService.closeTaskModal();
+    this.modalService.closeModal();
   }
 
   /**
@@ -289,10 +297,9 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     }
 
     this.selectedTask = { ...task }; // Create a copy for editing
-    this.isModalOpen = true;
 
     // Also update the modal service if other components need to know
-    this.modalService.openTaskModal({
+    this.modalService.openModal({
       users: this.users,
       tags: this.tags,
     });
@@ -322,13 +329,19 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     const updatedTaskData: Partial<Task> = {
       title: updatedTask.title,
       description: updatedTask.description,
+      status: updatedTask.status,
+      priority: updatedTask.priority,
+      startDate: new Date(updatedTask.startDate),
+      endDate: new Date(updatedTask.endDate),
+      tags: this.tags.filter((tag) => updatedTask.tagIds.includes(tag.id)),
+      assignedUsers: this.users.filter((user) => updatedTask.assignedUserIds.includes(user.id)),
     };
     this.taskService
       .updateTask(taskId, updatedTaskData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (newTask) => {
-          console.log('Task created successfully:', newTask);
+          console.log('Task updated successfully:', newTask);
           // You can add a success notification here
         },
         error: (error) => {

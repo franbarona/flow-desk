@@ -30,33 +30,45 @@
   <!-- Navegación -->
   <nav class="mt-4">
     <ul class="space-y-2 px-4">
-      <li *ngFor="let item of menuItems; let i = index">
+      @for (item of menuItems; track $index) {
+      <li>
         @if (item.subItems) {
         <div>
           <div
-            (click)="toggleSubmenu(i)"
-            class="flex gap-2 items-center px-4 py-2 text-gray-800 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200 cursor-pointer"
+            (click)="toggleSubmenu($index)"
+            class="flex gap-2 items-center px-4 py-2 text-gray-800 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200 cursor-pointer group"
+            [class.bg-[#F6F5E1]]="isMenuItemActive(item)"
+            [class.font-semibold]="isMenuItemActive(item)"
           >
             @if(item.icon) {
-            <app-icon [icon]="item.icon" />
+            <app-icon [icon]="item.icon" class="group-hover:hidden" />
             }
-            {{ item.label }}
             <span
-              class="ml-auto transition-transform duration-200"
-              [class.rotate-180]="openSubmenus[i]"
+              class="hidden group-hover:block transition-transform duration-200"
+              [class.rotate-90]="openSubmenus[$index]"
             >
-              <app-icon [icon]="'expand_more'" />
+              <app-icon [icon]="'keyboard_arrow_right'" />
             </span>
+            {{ item.label }}
+            <button
+              class="ml-auto hover:bg-amber-100 rounded p-1 transition-transform duration-200 cursor-pointer"
+              (click)="navigateToRoute(item.route, $event)"
+            >
+              <app-icon [icon]="'more_horiz'" />
+            </button>
           </div>
           <ul
             class="mt-1 ml-6 space-y-1 transition-all duration-200 overflow-hidden"
-            [class.hidden]="!openSubmenus[i]"
+            [class.hidden]="!openSubmenus[$index]"
           >
-            <li *ngFor="let subItem of item.subItems">
+            @for (subItem of item.subItems; track $index) {
+            <li>
+              <!-- ✅ Navegación específica para proyectos -->
               <a
-                [routerLink]="subItem.route"
-                routerLinkActive="bg-[#F6F5E1] font-semibold"
-                class="flex gap-2 items-center px-4 py-2 text-gray-700 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200"
+                (click)="navigateToProject(subItem.route)"
+                class="flex gap-2 items-center px-4 py-2 text-gray-700 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200 cursor-pointer"
+                [class.bg-[#F6F5E1]]="isProjectActive(subItem.route)"
+                [class.font-semibold]="isProjectActive(subItem.route)"
               >
                 @if(subItem.icon) {
                 <app-icon [icon]="subItem.icon" [color]="subItem.iconColor" />
@@ -64,13 +76,17 @@
                 {{ subItem.label }}
               </a>
             </li>
+            }
           </ul>
         </div>
         } @else {
+        <!-- ✅ Navegación normal con routerLink -->
         <a
           [routerLink]="item.route"
           routerLinkActive="bg-[#F6F5E1] font-bold"
           class="flex gap-2 items-center px-4 py-2 text-gray-700 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200"
+          [class.bg-[#F6F5E1]]="isRouteActive(item.route)"
+          [class.font-semibold]="isRouteActive(item.route)"
         >
           @if(item.icon) {
           <app-icon [icon]="item.icon" />
@@ -79,6 +95,7 @@
         </a>
         }
       </li>
+      }
     </ul>
   </nav>
 

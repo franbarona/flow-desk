@@ -1,19 +1,16 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CreateTaskRequest, Tag, Task, UpdateTaskRequest, User } from '../../models/task.interface';
-import { IconComponent } from "../icon/icon.component";
 import { ButtonComponent } from '../button/button.component';
 
 @Component({
-  selector: 'app-task-modal',
-  standalone: true,
-  templateUrl: './task-modal.component.html',
-  styleUrls: ['./task-modal.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, IconComponent, ButtonComponent],
+  selector: 'app-task-form',
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  templateUrl: './task-form.component.html',
+  styleUrl: './task-form.component.scss',
 })
-export class TaskModalComponent implements OnInit, OnChanges {
-  @Input() isOpen = false;
+export class TaskFormComponent implements OnChanges {
   @Input() users: User[] = [];
   @Input() tags: Tag[] = [];
   @Input() existingTask: Task | null = null; // For editing existing tasks
@@ -26,13 +23,24 @@ export class TaskModalComponent implements OnInit, OnChanges {
   selectedTags: Set<number> = new Set();
   isUserDropdownOpen = false;
   isEditMode = false;
+  projectOptions = [
+    { value: 1, label: 'Median' },
+    { value: 2, label: 'Risen' },
+    { value: 3, label: 'Strata Insurance' },
+  ];
+  priorityOptions = [
+    { value: 'Low', label: 'Low' },
+    { value: 'Medium', label: 'Medium' },
+    { value: 'High', label: 'High' },
+  ];
+  statusOptions = [
+    { value: 'todo', label: 'To Do' },
+    { value: 'doing', label: 'In Progress' },
+    { value: 'done', label: 'Done' },
+  ];
 
   constructor(private readonly fb: FormBuilder) {
     this.taskForm = this.createForm();
-  }
-
-  ngOnInit() {
-    // this.taskForm = this.createForm();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -47,38 +55,46 @@ export class TaskModalComponent implements OnInit, OnChanges {
 
   private createForm(): FormGroup {
     return this.fb.group({
+      project: [null],
+      priority: ['low', [Validators.required]],
       title: ['', [Validators.required, Validators.minLength(3)]],
+      status: ['todo', [Validators.required]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       startDate: ['', Validators.required],
-      endDate: ['', Validators.required]
+      endDate: ['', Validators.required],
     });
   }
 
   private populateFormWithTask(task: Task) {
     // Format dates for input[type="date"]
-    const startDate = task.startDate instanceof Date 
-      ? task.startDate.toISOString().split('T')[0]
-      : new Date(task.startDate).toISOString().split('T')[0];
-    const endDate = task.endDate instanceof Date 
-      ? task.endDate.toISOString().split('T')[0]
-      : new Date(task.endDate).toISOString().split('T')[0];
+    const startDate =
+      task.startDate instanceof Date
+        ? task.startDate.toISOString().split('T')[0]
+        : new Date(task.startDate).toISOString().split('T')[0];
+    const endDate =
+      task.endDate instanceof Date
+        ? task.endDate.toISOString().split('T')[0]
+        : new Date(task.endDate).toISOString().split('T')[0];
 
     this.taskForm.patchValue({
+      projectId: '0',//task.project,
+      priority: task.priority,
       title: task.title,
+      status: task.status,
       description: task.description,
       startDate: startDate,
-      endDate: endDate
+      endDate: endDate,
     });
 
     // Set selected users
     this.selectedUsers.clear();
-    task.assignedUsers.forEach(user => {
+    task.assignedUsers.forEach((user) => {
       this.selectedUsers.add(user.id);
     });
 
     // Set selected tags
     this.selectedTags.clear();
-    task.tags.forEach(tag => {
+    task.tags.forEach((tag) => {
       this.selectedTags.add(tag.id);
     });
   }
@@ -93,32 +109,36 @@ export class TaskModalComponent implements OnInit, OnChanges {
   onSubmit() {
     if (this.taskForm.valid && this.selectedUsers.size > 0) {
       const formValue = this.taskForm.value;
-      
+
       if (this.isEditMode && this.existingTask) {
         // Update existing task
         const taskRequest: UpdateTaskRequest = {
           id: this.existingTask.id,
+          priority: formValue.priority,
           title: formValue.title,
+          status: formValue.status,
           description: formValue.description,
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           assignedUserIds: Array.from(this.selectedUsers),
-          tagIds: Array.from(this.selectedTags)
+          tagIds: Array.from(this.selectedTags),
         };
         this.taskUpdated.emit(taskRequest);
       } else {
         // Create new task
         const taskRequest: CreateTaskRequest = {
+          priority: formValue.priority,
           title: formValue.title,
+          status: formValue.status,
           description: formValue.description,
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           assignedUserIds: Array.from(this.selectedUsers),
-          tagIds: Array.from(this.selectedTags)
+          tagIds: Array.from(this.selectedTags),
         };
         this.taskCreated.emit(taskRequest);
       }
-      
+
       this.closeModal();
     }
   }
@@ -158,9 +178,9 @@ export class TaskModalComponent implements OnInit, OnChanges {
       return 'Select users';
     }
     const selectedUserNames = this.users
-      .filter(user => this.selectedUsers.has(user.id))
-      .map(user => user.name);
-    
+      .filter((user) => this.selectedUsers.has(user.id))
+      .map((user) => user.name);
+
     if (selectedUserNames.length <= 2) {
       return selectedUserNames.join(', ');
     }
@@ -178,11 +198,35 @@ export class TaskModalComponent implements OnInit, OnChanges {
   }
 
   // Validation helpers
+  get projectErrors(): string | null {
+    const control = this.taskForm.get('project');
+    if (control?.errors && control.touched) {
+      if (control.errors['required']) return 'Project is required';
+    }
+    return null;
+  }
+
+  get priorityErrors(): string | null {
+    const control = this.taskForm.get('priority');
+    if (control?.errors && control.touched) {
+      if (control.errors['required']) return 'Priority is required';
+    }
+    return null;
+  }
+
   get titleErrors() {
     const control = this.taskForm.get('title');
     if (control?.touched && control?.errors) {
       if (control.errors['required']) return 'Title is required';
       if (control.errors['minlength']) return 'Title must be at least 3 characters';
+    }
+    return null;
+  }
+
+  get statusErrors(): string | null {
+    const control = this.taskForm.get('status');
+    if (control?.errors && control.touched) {
+      if (control.errors['required']) return 'Status is required';
     }
     return null;
   }

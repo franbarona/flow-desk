@@ -1,0 +1,29 @@
+<div class="sticky top-0 bg-white w-full z-10 border-b border-gray-200">
+  <h1 class="px-8 pt-6 pb-4 text-gray-700 text-3xl">Projects</h1>
+</div>
+<div class="w-[90%] mx-auto mt-8">
+  <div class="flex justify-end my-4">
+    <button
+      class="px-4 py-2.5 bg-lime-300 rounded-md cursor-pointer shadow-xs hover:shadow-lg hover:shadow-lime-100 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center gap-2"
+      (click)="addNewProject()"
+    >
+      <app-icon [icon]="'add'" /> Add new project
+    </button>
+  </div>
+  <div>
+    <app-projects-table [projects]="projects"> </app-projects-table>
+  </div>
+</div>
+
+<app-modal
+  [isOpen]="isModalOpen"
+  [title]="selectedProject ? 'Edit Project ' + selectedProject.id : 'New Project'"
+  (closeModal)="closeModal()"
+>
+  <app-project-form
+    [existingProject]="selectedProject"
+    (projectCreated)="onProjectCreated($event)"
+    (projectUpdated)="onProjectUpdated($event)"
+    (modalClosed)="closeModal()"
+  ></app-project-form>
+</app-modal>

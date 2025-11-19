@@ -10,8 +10,12 @@ export class TaskService {
   private readonly tasks$ = new BehaviorSubject<Task[]>(MOCK_TASKS_DATA);
   private readonly nextId = 1;
 
-  getTasks(): Observable<Task[]> {
-    return this.tasks$.asObservable();
+  get tasksValue(): Task[] {
+    return this.tasks$.value;
+  }
+
+  getTasks(projectId: string): Observable<Task[]> {
+    return of(this.tasksValue.filter(task => task.projectId === projectId));
   }
 
   getUsers(): Observable<User[]> {
@@ -35,7 +39,7 @@ export class TaskService {
       id: this.nextId.toString(),
       title: taskRequest.title,
       description: taskRequest.description,
-      column: 'todo',
+      status: taskRequest.status,
       priority: EnumTaskPriority.LOW,
       startDate: new Date(taskRequest.startDate),
       endDate: new Date(taskRequest.endDate),

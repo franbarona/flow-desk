@@ -23,7 +23,7 @@ export class ModalService {
    * Opens the task creation modal
    * @param data Optional data to pass to the modal (users, tags, etc.)
    */
-  openTaskModal(data?: ModalData): void {
+  openModal(data?: ModalData): void {
     if (data) {
       this.modalDataSubject.next(data);
     }
@@ -33,7 +33,7 @@ export class ModalService {
   /**
    * Closes the task creation modal
    */
-  closeTaskModal(): void {
+  closeModal(): void {
     this.isModalOpenSubject.next(false);
     // Optionally clear the data when closing
     // this.modalDataSubject.next(null);
