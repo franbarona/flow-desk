@@ -1,0 +1,49 @@
+/* Estilos adicionales para el componente tabla */
+.table-compact td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Animaciones suaves para hover */
+tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* Estilos para botones de acción */
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  backdrop-filter: blur(1px);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.75rem;
+  }
+  
+  .table-responsive th,
+  .table-responsive td {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Scrollbar personalizado */
+.overflow-x-auto::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 9999px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}

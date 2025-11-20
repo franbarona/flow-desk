@@ -1,10 +1,10 @@
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SidebarService } from '../../services/sidebar.service';
 import { ModalService } from '../../services/modal.service';
-import { IconComponent } from '../icon/icon.component';
-import e from 'express';
+import { WindowSizeService } from '../../services/window-size.service';
+import { ContextMenuAction } from '../shared/context-menu/context-menu.component';
+import { SharedModule } from '../shared/shared.module';
 
 interface MenuItem {
   label: string;
@@ -12,32 +12,35 @@ interface MenuItem {
   icon?: string;
   iconColor?: string;
   subItems?: MenuItem[];
+  actions?: ContextMenuAction[];
 }
 
 @Component({
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.scss'],
-  imports: [CommonModule, IconComponent, RouterModule], // ✅ Agregado RouterModule
+  imports: [SharedModule, RouterModule],
 })
 export class SidenavComponent implements OnInit {
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
+  private readonly windowSizeService = inject(WindowSizeService);
   private readonly sidebarService = inject(SidebarService);
   private readonly modalService = inject(ModalService);
-  private readonly router = inject(Router);
 
   currentRoute: string = '';
+  currentMenuActions: ContextMenuAction[] = [];
+  showMenu = false;
+  menuPosition = { x: 0, y: 0 };
 
   get isOpen() {
     return this.sidebarService.isOpen;
   }
 
+  get isDesktopSize () {
+    return this.windowSizeService.isLargeScreen();
+  }
+
   menuItems: MenuItem[] = [
-    // {
-    //   label: 'Task List',
-    //   route: '/tasks',
-    //   icon: 'content_paste',
-    // },
     {
       label: 'Projects',
       route: '/projects',
@@ -62,6 +65,12 @@ export class SidenavComponent implements OnInit {
           iconColor: 'orange',
         },
       ],
+      actions: [
+        {
+          action: () => this.navigateToRoute('/projects'),
+          label: 'Manage Projects',
+        },
+      ],
     },
     {
       label: 'Tags',
@@ -83,13 +92,6 @@ export class SidenavComponent implements OnInit {
   openSubmenus: boolean[] = [];
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      if (window.innerWidth >= 1024) {
-        this.openSidenav();
-      } else {
-        this.closeSidenav();
-      }
-    }
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentRoute = event.url;
@@ -131,10 +133,11 @@ export class SidenavComponent implements OnInit {
     if (!menuItem.subItems) {
       return this.isRouteActive(menuItem.route);
     }
-    
+
     return this.hasActiveSubItem(menuItem);
   }
 
+  // MENU ACTIONS
   toggleSubmenu(index: number): void {
     this.openSubmenus[index] = !this.openSubmenus[index];
   }
@@ -149,5 +152,31 @@ export class SidenavComponent implements OnInit {
 
   closeSidenav(): void {
     this.sidebarService.close();
+  }
+
+  // CONTEXT MENU ACTIONS
+  showOptionsMenu(item: MenuItem, event: MouseEvent) {
+    event.stopPropagation();
+    this.currentMenuActions = item.actions!;
+    this.showMenuAtButton(event);
+  }
+
+  onActionSelected(action: ContextMenuAction) {
+    action.action();
+  }
+
+  onContextMenuClosed() {
+    this.showMenu = false;
+  }
+
+  private showMenuAtButton(event: MouseEvent) {
+    const buttonRect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    // Show the menu under clicked button
+    this.menuPosition = {
+      x: buttonRect.left,
+      y: buttonRect.bottom + 5,
+    };
+
+    this.showMenu = true;
   }
 }

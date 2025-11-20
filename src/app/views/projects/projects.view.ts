@@ -7,16 +7,15 @@ import {
   UpdateProjectRequest,
 } from '../../models/project.interface';
 import { ProjectsTableComponent } from '../../components/projects-table/projects-table.component';
-import { ModalComponent } from '../../components/modal/modal.component';
 import { ProjectFormComponent } from '../../components/project-form/project-form.component';
 import { ModalService } from '../../services/modal.service';
-import { IconComponent } from '../../components/icon/icon.component';
+import { SharedModule } from '../../components/shared/shared.module';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.view.html',
   styleUrl: './projects.view.scss',
-  imports: [ProjectsTableComponent, ModalComponent, ProjectFormComponent, IconComponent],
+  imports: [SharedModule, ProjectsTableComponent, ProjectFormComponent],
 })
 export class ProjectsView implements OnInit {
   private readonly projectService = inject(ProjectService);
@@ -41,6 +40,18 @@ export class ProjectsView implements OnInit {
     this.modalService.openModal();
   }
 
+  openProjectModal(project: Project, event?: MouseEvent) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.selectedProject = { ...project }; // Create a copy for editing
+
+    // Also update the modal service if other components need to know
+    this.modalService.openModal();
+  }
+
   /**
    * Handles creation of new projects
    */
@@ -61,7 +72,24 @@ export class ProjectsView implements OnInit {
   }
 
   onProjectUpdated(updatedProject: UpdateProjectRequest) {
-    //TODO
+    const projectId = updatedProject.id;
+    const updatedProjectData: Partial<Project> = {
+      name: updatedProject.name,
+      color: updatedProject.color
+    };
+    this.projectService
+      .updateProject(projectId, updatedProjectData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newProject) => {
+          console.log('Project updated successfully:', newProject);
+          // You can add a success notification here
+        },
+        error: (error) => {
+          console.error('Error creating project:', error);
+          // You can add error handling/notification here
+        },
+      });
   }
 
   closeModal() {

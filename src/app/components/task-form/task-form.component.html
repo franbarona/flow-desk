@@ -7,9 +7,8 @@
     <!-- Project -->
     <div class="space-y-2 flex-2">
       <label for="project" class="block text-sm font-medium text-gray-700">
-        Project 
-        @if (taskForm.get('project')?.validator) {
-          <span class="text-red-500">*</span>
+        Project @if (taskForm.get('project')?.validator) {
+        <span class="text-red-500">*</span>
         }
       </label>
       <div class="relative">
@@ -26,14 +25,7 @@
 
         <!-- Icono de dropdown -->
         <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
-          </svg>
+          <app-icon [icon]="'keyboard_arrow_down'" />
         </span>
       </div>
 

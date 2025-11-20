@@ -1,0 +1,20 @@
+<div class="color-picker">
+  <!-- <h3 class="picker-title">Selecciona un color</h3> -->
+  <div class="flex gap-2 p-2">
+    @for (color of colors; track $index) {
+    <button
+      type="button"
+      class="w-8 h-8 rounded-full cursor-pointer hover:scale-[1.1] transition-all duration-200 ease-in-out"
+      [class.selected]="selectedColor === color.value"
+      [style.backgroundColor]="color.value"
+      [attr.aria-label]="color.name"
+      [title]="color.name"
+      (click)="selectColor(color.value)"
+    >
+      @if (selectedColor === color.value) {
+      <app-icon [icon]="'check'" [color]="getContrastColor(color.value)" />
+      }
+    </button>
+    }
+  </div>
+</div>

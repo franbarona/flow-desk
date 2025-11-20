@@ -1,6 +1,4 @@
-<div class="sticky top-0 bg-white w-full z-10 border-b border-gray-200">
-  <h1 class="px-8 pt-6 pb-4 text-gray-700 text-3xl">Projects</h1>
-</div>
+<app-title title="Projects"></app-title>
 <div class="w-[90%] mx-auto mt-8">
   <div class="flex justify-end my-4">
     <button
@@ -11,7 +9,7 @@
     </button>
   </div>
   <div>
-    <app-projects-table [projects]="projects"> </app-projects-table>
+    <app-projects-table [projects]="projects" (editProject)="openProjectModal($event)"> </app-projects-table>
   </div>
 </div>
 

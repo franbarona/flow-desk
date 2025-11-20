@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { CreateProjectRequest, Project, UpdateProjectRequest } from '../../models/project.interface';
-import { ButtonComponent } from '../button/button.component';
+import { SharedModule } from '../shared/shared.module';
 
 @Component({
   selector: 'app-project-form',
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  imports: [SharedModule, ReactiveFormsModule],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
 })
@@ -19,6 +18,9 @@ export class ProjectFormComponent implements OnChanges {
   projectForm: FormGroup;
   isEditMode = false;
 
+  get currentColor() {
+    return this.projectForm?.controls['color'].value;
+  }
 
   constructor(private readonly fb: FormBuilder) {
     this.projectForm = this.createForm();
@@ -37,17 +39,23 @@ export class ProjectFormComponent implements OnChanges {
   private createForm(): FormGroup {
     return this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
+      color: [''],
     });
   }
 
   private populateFormWithTask(project: Project) {
     this.projectForm.patchValue({
       name: project.name,
+      color: project.color
     });
   }
 
   private resetForm() {
     this.projectForm.reset();
+  }
+
+  onColorSelected (color: string) {
+    this.projectForm.controls['color'].setValue(color)
   }
 
   onSubmit() {
@@ -59,14 +67,16 @@ export class ProjectFormComponent implements OnChanges {
         const projectRequest: UpdateProjectRequest = {
           id: this.existingProject.id,
           name: formValue.name,
-          slug: formValue.name?.toLowerCase().replace(/\s+/g, '-')
+          slug: formValue.name?.toLowerCase().replace(/\s+/g, '-'),
+          color: formValue.color
         };
         this.projectUpdated.emit(projectRequest);
       } else {
         // Create new task
         const projectRequest: CreateProjectRequest = {
           name: formValue.name,
-          slug: formValue.name?.toLowerCase().replace(/\s+/g, '-')
+          slug: formValue.name?.toLowerCase().replace(/\s+/g, '-'),
+          color: formValue.color
         };
         this.projectCreated.emit(projectRequest);
       }

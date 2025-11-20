@@ -37,4 +37,25 @@ export class ProjectService {
 
     return of(newProject);
   }
+
+  updateProject(projectId: string, updates: Partial<Project>): Observable<Project | null> {
+    const currentProjects = this.projects$.value;
+    const projectIndex = currentProjects.findIndex((project) => project.id === projectId);
+
+    if (projectIndex === -1) {
+      return of(null);
+    }
+
+    const updatedProject = {
+      ...currentProjects[projectIndex],
+      ...updates,
+      updatedAt: new Date(),
+    };
+
+    const updatedProjects = [...currentProjects];
+    updatedProjects[projectIndex] = updatedProject;
+    this.projects$.next(updatedProjects);
+
+    return of(updatedProject);
+  }
 }

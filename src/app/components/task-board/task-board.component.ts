@@ -7,23 +7,21 @@ import {
   UpdateTaskRequest,
   User,
 } from '../../models/task.interface';
-import { CommonModule } from '@angular/common';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import { MOCK_COLUMNS_DATA } from '../../constants/mocks';
 import { TaskService } from '../../services/task.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ModalService } from '../../services/modal.service';
-import { IconComponent } from '../icon/icon.component';
 import { TaskFormComponent } from '../task-form/task-form.component';
-import { ModalComponent } from '../modal/modal.component';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
+import { SharedModule } from '../shared/shared.module';
 
 @Component({
   selector: 'app-task-board',
   templateUrl: './task-board.component.html',
   styleUrls: ['./task-board.component.scss'],
-  imports: [CommonModule, TaskCardComponent, IconComponent, TaskFormComponent, ModalComponent],
+  imports: [SharedModule, TaskCardComponent, TaskFormComponent],
 })
 export class TaskBoardComponent implements OnInit, OnDestroy {
   projectId!: string;

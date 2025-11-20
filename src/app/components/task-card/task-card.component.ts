@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import {User, EnumTaskPriority, Tag, Task} from '../../models/task.interface';
 import { CommonModule } from '@angular/common';
 import { MOCK_TAGS_DATA, MOCK_USERS_DATA } from '../../constants/mocks';
-import { IconComponent } from '../icon/icon.component';
+import { IconComponent } from '../shared/icon/icon.component';
 
 @Component({
   selector: 'app-task-card',

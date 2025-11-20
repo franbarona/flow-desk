@@ -135,12 +135,12 @@ export class UsersTableComponent {
 
   // Eventos para acciones (puedes emitir eventos o manejar según tu necesidad)
   onEditUser(user: User): void {
-    console.log('Editar usuario:', user);
+    console.log('Edit user:', user);
     // Aquí puedes emitir un evento o llamar a un servicio
   }
 
   onDeleteUser(user: User): void {
-    console.log('Eliminar usuario:', user);
+    console.log('Delete user:', user);
     // Aquí puedes emitir un evento o llamar a un servicio
   }
 }

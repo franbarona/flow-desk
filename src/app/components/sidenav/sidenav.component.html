@@ -1,31 +1,24 @@
 <!-- Sidebar -->
 <aside
-  class="fixed top-0 left-0 z-50 w-64 h-screen transition-transform duration-300 ease-in-out border-r border-gray-300 bg-[#F9FAF5] lg:translate-x-0 font-medium"
-  [class.translate-x-0]="isOpen"
+  class="fixed top-0 left-0 z-50 w-64 h-screen transition-transform duration-300 ease-in-out border-r border-gray-300 bg-[#F9FAF5]  font-medium"
+  [class.translate-x-0]="isOpen || isDesktopSize"
   [class.-translate-x-full]="!isOpen"
 >
   <!-- Header del sidebar -->
-  <div class="flex items-center justify-start p-8">
+  <div class="flex items-center justify-between p-8">
     <h2 class="text-xl font-semibold text-gray-800">FlowDesk</h2>
-    <button (click)="toggleSidenav()" class="lg:hidden p-2 rounded-md hover:bg-gray-100">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        ></path>
-      </svg>
+    <button (click)="toggleSidenav()" class="lg:hidden p-2 rounded-md hover:bg-gray-100 cursor-pointer">
+      <app-icon [icon]="'close'" />
     </button>
   </div>
-  <div class="m-auto flex justify-center mt-4 px-4">
+  <!-- <div class="m-auto flex justify-center mt-4 px-4">
     <button
       class="w-full py-2.5 bg-lime-300 rounded-md cursor-pointer shadow-xs hover:shadow-lg hover:shadow-lime-100 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center gap-2"
       (click)="addNewTask()"
     >
       <app-icon [icon]="'add'" /> Add new task
     </button>
-  </div>
+  </div> -->
 
   <!-- Navegación -->
   <nav class="mt-4">
@@ -37,8 +30,8 @@
           <div
             (click)="toggleSubmenu($index)"
             class="flex gap-2 items-center px-4 py-2 text-gray-800 rounded-md hover:bg-[#F6F5E1] transition-colors duration-200 cursor-pointer group"
-            [class.bg-[#F6F5E1]]="isMenuItemActive(item)"
-            [class.font-semibold]="isMenuItemActive(item)"
+            [class.bg-[#F6F5E1]]="isMenuItemActive(item) || isRouteActive(item.route)"
+            [class.font-semibold]="isMenuItemActive(item) || isRouteActive(item.route)"
           >
             @if(item.icon) {
             <app-icon [icon]="item.icon" class="group-hover:hidden" />
@@ -52,7 +45,7 @@
             {{ item.label }}
             <button
               class="ml-auto hover:bg-amber-100 rounded p-1 transition-transform duration-200 cursor-pointer"
-              (click)="navigateToRoute(item.route, $event)"
+              (click)="showOptionsMenu(item, $event)"
             >
               <app-icon [icon]="'more_horiz'" />
             </button>
@@ -110,3 +103,12 @@
     </div>
   </div>
 </aside>
+
+<!-- Componente del menú contextual -->
+<app-context-menu
+  [actions]="currentMenuActions"
+  [isVisible]="showMenu"
+  [position]="menuPosition"
+  (actionSelected)="onActionSelected($event)"
+  (menuClosed)="onContextMenuClosed()"
+></app-context-menu>

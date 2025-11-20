@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { CreateTaskRequest, Tag, Task, UpdateTaskRequest, User } from '../../models/task.interface';
-import { ButtonComponent } from '../button/button.component';
+import { SharedModule } from '../shared/shared.module';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-task-form',
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  imports: [SharedModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.scss',
 })
