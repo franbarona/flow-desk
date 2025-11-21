@@ -23,6 +23,7 @@ export class ProjectsView implements OnInit {
   private readonly destroy$ = new Subject<void>();
   projects: Project[] = [];
   selectedProject: Project | null = null;
+  modalAction: 'upsert' | 'delete' | null = null;
 
   get isModalOpen() {
     return this.modalService.isModalOpen;
@@ -37,6 +38,7 @@ export class ProjectsView implements OnInit {
   }
 
   addNewProject() {
+    this.modalAction = 'upsert';
     this.modalService.openModal();
   }
 
@@ -46,9 +48,19 @@ export class ProjectsView implements OnInit {
       event.stopPropagation();
     }
 
-    this.selectedProject = { ...project }; // Create a copy for editing
+    this.selectedProject = { ...project };
+    this.modalAction = 'upsert';
+    this.modalService.openModal();
+  }
 
-    // Also update the modal service if other components need to know
+  deleteConfirmationModal(project: Project, event?: MouseEvent) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.selectedProject = { ...project };
+    this.modalAction = 'delete';
     this.modalService.openModal();
   }
 
@@ -75,7 +87,7 @@ export class ProjectsView implements OnInit {
     const projectId = updatedProject.id;
     const updatedProjectData: Partial<Project> = {
       name: updatedProject.name,
-      color: updatedProject.color
+      color: updatedProject.color,
     };
     this.projectService
       .updateProject(projectId, updatedProjectData)
@@ -83,17 +95,33 @@ export class ProjectsView implements OnInit {
       .subscribe({
         next: (newProject) => {
           console.log('Project updated successfully:', newProject);
-          // You can add a success notification here
         },
         error: (error) => {
           console.error('Error creating project:', error);
-          // You can add error handling/notification here
         },
       });
   }
 
+  handleDeleteProject() {
+    const projectId = this.selectedProject?.id;
+    if (!projectId) return;
+    this.projectService
+      .deleteProject(projectId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          console.log('Project deleted successfully');
+        },
+        error: (error) => {
+          console.error('Error deleting project:', error);
+        },
+      });
+    this.closeModal();
+  }
+
   closeModal() {
     this.selectedProject = null;
+    this.modalAction = null;
     this.modalService.closeModal();
   }
 }

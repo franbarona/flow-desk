@@ -8,7 +8,7 @@ import { MOCK_PROJECTS_DATA } from '../constants/mocks';
   providedIn: 'root',
 })
 export class ProjectService {
-  private readonly projects$ = new BehaviorSubject<Project[]>(MOCK_PROJECTS_DATA);
+  projects$ = new BehaviorSubject<Project[]>(MOCK_PROJECTS_DATA);
 
   get projectsValue(): Project[] {
     return this.projects$.value;
@@ -57,5 +57,19 @@ export class ProjectService {
     this.projects$.next(updatedProjects);
 
     return of(updatedProject);
+  }
+
+  deleteProject(projectId: string): Observable<boolean> {
+    const currentProjects = this.projects$.value;
+    const projectIndex = currentProjects.findIndex((project) => project.id === projectId);
+
+    if (projectIndex === -1) {
+      return of(false); // Proyecto no encontrado
+    }
+
+    const updatedProjects = currentProjects.filter((project) => project.id !== projectId);
+    this.projects$.next(updatedProjects);
+
+    return of(true); // Eliminación exitosa
   }
 }

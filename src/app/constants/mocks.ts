@@ -21,9 +21,9 @@ export const MOCK_TAGS_DATA: Tag[] = [
 ];
 
 export const MOCK_PROJECTS_DATA: Project[] = [
-  { id: '1', name: 'Median', slug: 'median' },
-  { id: '2', name: 'Risen', slug: 'risen' },
-  { id: '3', name: 'Strata Insurance', slug: 'strata-insurance' },
+  { id: '1', name: 'Median', slug: 'median', color:'oklch(82.3% 0.12 346.018)' },
+  { id: '2', name: 'Risen', slug: 'risen', color: 'oklch(62.3% 0.214 259.815)' },
+  { id: '3', name: 'Strata Insurance', slug: 'strata-insurance', color: 'oklch(79.5% 0.184 86.047)' },
 ];
 
 export const MOCK_TASKS_DATA: Task[] = [

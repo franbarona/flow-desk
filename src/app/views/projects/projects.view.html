@@ -9,19 +9,33 @@
     </button>
   </div>
   <div>
-    <app-projects-table [projects]="projects" (editProject)="openProjectModal($event)"> </app-projects-table>
+    <app-projects-table
+      [projects]="projects"
+      (editProject)="openProjectModal($event)"
+      (deleteProject)="deleteConfirmationModal($event)"
+    >
+    </app-projects-table>
   </div>
 </div>
 
 <app-modal
   [isOpen]="isModalOpen"
-  [title]="selectedProject ? 'Edit Project ' + selectedProject.id : 'New Project'"
+  [title]="selectedProject && modalAction === 'upsert' ? 'Edit Project ' : !selectedProject && modalAction === 'upsert' ? 'New Project' : 'Delete project'"
   (closeModal)="closeModal()"
 >
+  @if (modalAction === 'upsert') {
   <app-project-form
     [existingProject]="selectedProject"
     (projectCreated)="onProjectCreated($event)"
     (projectUpdated)="onProjectUpdated($event)"
     (modalClosed)="closeModal()"
   ></app-project-form>
+  } 
+  @if (modalAction === 'delete') {
+    <app-delete-confirmation
+    [title]="`Are you sure you want to delete the project '${selectedProject?.name}' ?`"
+    (confirmed)="handleDeleteProject()"
+    (cancelled)="closeModal()"
+    />
+  }
 </app-modal>

@@ -1,3 +1,5 @@
+import { TemplateRef } from "@angular/core";
+
 export interface TableColumn<T = any> {
   key: keyof T | string;
   title: string;
@@ -6,6 +8,7 @@ export interface TableColumn<T = any> {
   align?: 'left' | 'center' | 'right';
   formatter?: (value: any, row: T) => string;
   cellClass?: string;
+  cellTemplate?: TemplateRef<any>;
   headerClass?: string;
 }
 

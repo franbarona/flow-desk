@@ -1,0 +1,24 @@
+<div class="p-6 space-y-6">
+  <!-- Contenido principal -->
+  <div class="text-center mt-10 mb-15">
+    <h3 class="text-lg font-medium text-gray-900">
+      {{ title || 'Confirm deletion' }}
+    </h3>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+    <app-button
+      label="Cancel"
+      type="button"
+      [style]="'secondary'"
+      (action)="onCancel()"
+    ></app-button>
+    <app-button
+      label='Confirm'
+      type="button"
+      [style]="'primary'"
+      (action)="onConfirm()"
+    ></app-button>
+  </div>
+</div>

@@ -10,6 +10,7 @@ import { TableComponent } from './table/table.component';
 import { TitleComponent } from './title/title.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
+import { DeleteConfirmationComponent } from './delete-confirmation/delete-confirmation.component';
 // import { LoaderComponent } from './loader/loader.component'; TODO
 
 @NgModule({
@@ -22,7 +23,8 @@ import { ColorPickerComponent } from './color-picker/color-picker.component';
     TableComponent,
     TitleComponent,
     ContextMenuComponent,
-    ColorPickerComponent
+    ColorPickerComponent,
+    DeleteConfirmationComponent
     // LoaderComponent, //TODO
   ],
   exports: [
@@ -34,7 +36,8 @@ import { ColorPickerComponent } from './color-picker/color-picker.component';
     TableComponent,
     TitleComponent,
     ContextMenuComponent,
-    ColorPickerComponent
+    ColorPickerComponent,
+    DeleteConfirmationComponent
     // LoaderComponent, //TODO
   ]
 })

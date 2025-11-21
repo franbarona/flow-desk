@@ -5,6 +5,8 @@ import { ModalService } from '../../services/modal.service';
 import { WindowSizeService } from '../../services/window-size.service';
 import { ContextMenuAction } from '../shared/context-menu/context-menu.component';
 import { SharedModule } from '../shared/shared.module';
+import { ProjectService } from '../../services/project.service';
+import { Subscription } from 'rxjs';
 
 interface MenuItem {
   label: string;
@@ -26,6 +28,8 @@ export class SidenavComponent implements OnInit {
   private readonly windowSizeService = inject(WindowSizeService);
   private readonly sidebarService = inject(SidebarService);
   private readonly modalService = inject(ModalService);
+  private readonly projectService = inject(ProjectService);
+  private readonly subscription = new Subscription();
 
   currentRoute: string = '';
   currentMenuActions: ContextMenuAction[] = [];
@@ -36,35 +40,18 @@ export class SidenavComponent implements OnInit {
     return this.sidebarService.isOpen;
   }
 
-  get isDesktopSize () {
+  get isDesktopSize() {
     return this.windowSizeService.isLargeScreen();
   }
+
+  projectsSubItems: MenuItem[] = [];
 
   menuItems: MenuItem[] = [
     {
       label: 'Projects',
       route: '/projects',
       icon: 'folder',
-      subItems: [
-        {
-          label: 'Median',
-          route: 'median',
-          icon: 'square',
-          iconColor: 'pink',
-        },
-        {
-          label: 'Risen',
-          route: 'risen',
-          icon: 'square',
-          iconColor: 'blue',
-        },
-        {
-          label: 'Statra Insurance',
-          route: 'strata-insurance',
-          icon: 'square',
-          iconColor: 'orange',
-        },
-      ],
+      subItems: this.projectsSubItems,
       actions: [
         {
           action: () => this.navigateToRoute('/projects'),
@@ -97,6 +84,18 @@ export class SidenavComponent implements OnInit {
         this.currentRoute = event.url;
       }
     });
+     this.subscription.add(
+      this.projectService.projects$.subscribe(projects => {
+        this.projectsSubItems = projects.map(project => ({
+          label: project.name,
+          route: project.slug,
+          icon: 'nearby',
+          iconColor: project.color,
+        }));
+        
+        this.updateProjectSubItems();
+      })
+    );
     this.openSubmenus = new Array(this.menuItems.length).fill(true);
   }
 
@@ -178,5 +177,15 @@ export class SidenavComponent implements OnInit {
     };
 
     this.showMenu = true;
+  }
+
+  private updateProjectSubItems(): void {
+    const projectsMenuIndex = this.menuItems.findIndex(item => item.label === 'Projects');
+    if (projectsMenuIndex !== -1) {
+      this.menuItems[projectsMenuIndex] = {
+        ...this.menuItems[projectsMenuIndex],
+        subItems: this.projectsSubItems
+      };
+    }
   }
 }

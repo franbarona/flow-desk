@@ -6,7 +6,7 @@
   </div>
   }
 
-  <!-- 🆕 Buscador superior -->
+  <!-- Search -->
   @if (config.searchable) {
   <div class="mb-4 flex items-center gap-10">
     <div class="relative flex-1">
@@ -18,12 +18,12 @@
         class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-transparent bg-white placeholder-gray-300"
       />
 
-      <!-- Icono de búsqueda -->
+      <!-- Search icon -->
       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         <app-icon [icon]="'search'" />
       </div>
 
-      <!-- Botón limpiar -->
+      <!-- Clean button -->
       @if (currentSearchTerm || searchTerm) {
       <button
         (click)="clearSearch()"
@@ -34,14 +34,14 @@
       }
     </div>
 
-    <!-- Contador de resultados -->
+    <!-- Results counter -->
     <div class="text-sm text-gray-500">
       {{ processedData.length }} de {{ data.length }} resultados
     </div>
   </div>
   }
 
-  <!-- Tabla -->
+  <!-- Table -->
   <table class="w-full overflow-hidden bg-white shadow-md rounded-lg">
     <!-- Header -->
     @if (config.showHeader !== false) {
@@ -65,7 +65,7 @@
           <div class="flex items-center gap-1">
             <span>{{ column.title }}</span>
 
-            <!-- Iconos de ordenamiento -->
+            <!-- Short icons -->
             @if (column.sortable) {
             <div class="flex flex-col">
               <svg
@@ -106,7 +106,7 @@
         </th>
         }
 
-        <!-- Columna de acciones -->
+        <!-- Column actions -->
         @if (actions && actions.length > 0) {
         <th class="px-6 py-3 text-center"></th>
         }
@@ -116,14 +116,14 @@
 
     <!-- Body -->
     <tbody>
-      <!-- Filas de datos -->
+      <!-- Data row -->
       @for (row of processedData; track $index) {
       <tr [ngClass]="rowClasses" (click)="onRowClick(row, $index)">
-        <!-- Celdas de datos -->
+        <!-- Data cell -->
+        @for (column of columns; track $index) {
         <td
-          *ngFor="let column of columns"
           [ngClass]="[
-            'px-6 py-4 elipsis',
+            'px-6 py-4',
             config.compact ? 'py-2' : 'py-4',
             column.cellClass || '',
             column.align === 'center'
@@ -133,13 +133,14 @@
               : 'text-left'
           ]"
         >
-          <!-- Template personalizado si existe -->
-          <ng-container *ngIf="customCellTemplate; else defaultCell">
+          <!-- Template customized by column -->
+          @if (column.cellTemplate) {
             <ng-container
               *ngTemplateOutlet="
-                customCellTemplate;
+                column.cellTemplate;
                 context: {
                   $implicit: getCellValue(row, column),
+                  value: getCellValue(row, column),
                   row: row,
                   column: column,
                   index: $index
@@ -147,17 +148,34 @@
               "
             >
             </ng-container>
-          </ng-container>
+          } @else {
+            <!-- Template customized global -->
+            <ng-container *ngIf="customCellTemplate; else defaultCell">
+              <ng-container
+                *ngTemplateOutlet="
+                  customCellTemplate;
+                  context: {
+                    $implicit: getCellValue(row, column),
+                    row: row,
+                    column: column,
+                    index: $index
+                  }
+                "
+              >
+              </ng-container>
+            </ng-container>
 
-          <!-- Template por defecto -->
-          <ng-template #defaultCell>
-            <span [innerHTML]="getCellValue(row, column)"></span>
-          </ng-template>
+            <!-- Template by default -->
+            <ng-template #defaultCell>
+              <span [innerHTML]="getCellValue(row, column)"></span>
+            </ng-template>
+          }
         </td>
+        }
 
-        <!-- Celda de acciones -->
+        <!-- Cell actions -->
         @if (actions && actions.length > 0) {
-        <td class="px-6 py-4 text-center">
+        <td class="px-6 py-4">
           <!-- Template personalizado para acciones -->
           <ng-container *ngIf="customActionTemplate; else defaultActions">
             <ng-container
@@ -173,7 +191,7 @@
             </ng-container>
           </ng-container>
 
-          <!-- Template por defecto para acciones -->
+          <!-- Template actions by default -->
           <ng-template #defaultActions>
             <div class="flex items-center justify-end gap-2">
               @for (action of actions; track $index) { @if (shouldShowAction(action, row)) {
@@ -186,11 +204,15 @@
                 ]"
                 (click)="onActionClick(action, row, $index, $event)"
               >
-                <!-- Icono si existe -->
+                <!-- Action icon -->
                 @if (action.icon) {
-                <app-icon [icon]="action.icon" class="mr-1" />
+                <app-icon [icon]="action.icon" />
                 }
-                {{ action.label }}
+                @if (action.label.length > 0) {
+                  <span class="ml-1">
+                    {{ action.label }}
+                  </span>
+                }
               </button>
               } }
             </div>
@@ -199,7 +221,7 @@
         }
       </tr>
 
-      <!-- Fila de estado vacío -->
+      <!-- Empty state row -->
       @if (processedData.length === 0 && !loading && !config.loading) {
       <tr>
         <td

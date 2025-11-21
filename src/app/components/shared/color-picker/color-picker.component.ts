@@ -15,14 +15,14 @@ export class ColorPickerComponent {
 
   colors = [
     { name: 'Black', value: '#000' },
-    { name: 'Red', value: '#ef4444' },
-    { name: 'Blue', value: '#3b82f6' },
-    { name: 'Green', value: '#10b981' },
-    { name: 'Yellow', value: '#f59e0b' },
-    { name: 'Purple', value: '#8b5cf6' },
-    { name: 'Pink', value: '#ec4899' },
-    { name: 'Orange', value: '#f97316' },
-    { name: 'Gray', value: '#6b7280' }
+    { name: 'Red', value: 'oklch(64.5% 0.246 16.439)' },
+    { name: 'Blue', value: 'oklch(62.3% 0.214 259.815)' },
+    { name: 'Green', value: 'oklch(72.3% 0.219 149.579)' },
+    { name: 'Yellow', value: 'oklch(79.5% 0.184 86.047)' },
+    { name: 'Purple', value: 'oklch(60.6% 0.25 292.717)' },
+    { name: 'Pink', value: 'oklch(82.3% 0.12 346.018)' },
+    { name: 'Orange', value: 'oklch(75% 0.183 55.934)' },
+    { name: 'Gray', value: 'oklch(55.1% 0.027 264.364)' }
   ];
 
   selectColor(color: string): void {
