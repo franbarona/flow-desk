@@ -1,7 +1,14 @@
 <app-table [data]="projects" [columns]="columns" [actions]="actions">
+  <ng-template #idTemplate let-value="value" let-row="row">
+    <span
+      class="items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 max-w-[5em] truncate"
+    >
+      #{{ value }}
+    </span>
+  </ng-template>
   <ng-template #colorTemplate let-value="value" let-row="row">
     @if (value) {
-      <app-icon [icon]="'nearby'" [color]="value"/>
+    <app-icon [icon]="'nearby'" [color]="value" />
     }
   </ng-template>
 </app-table>

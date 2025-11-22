@@ -28,6 +28,7 @@ export class ProjectsTableComponent implements AfterViewInit {
   @Input() isLoading: boolean = false;
   @Output() editProject = new EventEmitter<Project>();
   @Output() deleteProject = new EventEmitter<Project>();
+  @ViewChild('idTemplate') idTemplate!: TemplateRef<any>;
   @ViewChild('colorTemplate') colorTemplate!: TemplateRef<any>;
 
   columns: TableColumn<Project>[] = [];
@@ -52,7 +53,7 @@ export class ProjectsTableComponent implements AfterViewInit {
   ngAfterViewInit() {
     // 🆕 Configurar las columnas con templates personalizados
     this.columns = [
-      { key: 'id', title: 'ID', sortable: true, width: '5em', cellClass: 'max-w-[5em] truncate' },
+      { key: 'id', title: 'ID', sortable: true, width: '5em', cellTemplate: this.idTemplate, cellClass: '' },
       {
         key: 'color',
         title: '',
@@ -66,7 +67,7 @@ export class ProjectsTableComponent implements AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  // Event actions (TODO)
+  // Event actions
   navigateToProject(slug: string) {
     this.router.navigate(['/project', slug]);
   }

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import * as uuid from 'uuid';
+import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { Project, ProjectRequest } from '../models/project.interface';
 import { MOCK_PROJECTS_DATA } from '../constants/mocks';
 
@@ -24,9 +26,11 @@ export class ProjectService {
   }
 
   createProject(projectRequest: ProjectRequest): Observable<Project> {
+    const noZeroNanoid = customAlphabet('123456789', 6); //ABCDEFGHIJKLMNOPQRSTUVWXYZ
     const newProject: Project = {
-      id: uuid.v4(),
+      id: noZeroNanoid(),
       name: projectRequest.name,
+      color: projectRequest.color,
       slug: projectRequest.slug,
       createdAt: new Date(),
       updatedAt: new Date(),

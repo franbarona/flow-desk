@@ -1,1 +1,7 @@
-<p>users-table works!</p>
+<app-table [data]="projects" [columns]="columns" [actions]="actions">
+  <ng-template #colorTemplate let-value="value" let-row="row">
+    @if (value) {
+      <app-icon [icon]="'nearby'" [color]="value"/>
+    }
+  </ng-template>
+</app-table>

@@ -21,16 +21,16 @@ export const MOCK_TAGS_DATA: Tag[] = [
 ];
 
 export const MOCK_PROJECTS_DATA: Project[] = [
-  { id: '1', name: 'Median', slug: 'median', color:'oklch(82.3% 0.12 346.018)' },
-  { id: '2', name: 'Risen', slug: 'risen', color: 'oklch(62.3% 0.214 259.815)' },
-  { id: '3', name: 'Strata Insurance', slug: 'strata-insurance', color: 'oklch(79.5% 0.184 86.047)' },
+  { id: '156235', name: 'Median', slug: 'median', color:'oklch(82.3% 0.12 346.018)' },
+  { id: '839328', name: 'Risen', slug: 'risen', color: 'oklch(62.3% 0.214 259.815)' },
+  { id: '524946', name: 'Strata Insurance', slug: 'strata-insurance', color: 'oklch(79.5% 0.184 86.047)' },
 ];
 
 export const MOCK_TASKS_DATA: Task[] = [
   // TODO
   {
     id: '5',
-    projectId: '1',
+    projectId: '156235',
     title: 'Research DB options for new microservice',
     description: '',
     startDate: new Date(),
@@ -42,7 +42,7 @@ export const MOCK_TASKS_DATA: Task[] = [
   },
   {
     id: '7',
-    projectId: '1',
+    projectId: '156235',
     title: 'Sync with product on Q3 roadmap',
     description: '',
     startDate: new Date(),
@@ -55,7 +55,7 @@ export const MOCK_TASKS_DATA: Task[] = [
   // DOING
   {
     id: '8',
-    projectId: '1',
+    projectId: '156235',
     title: 'Refactor context providers to use Zustand',
     description: '',
     startDate: new Date(),
@@ -67,7 +67,7 @@ export const MOCK_TASKS_DATA: Task[] = [
   },
   {
     id: '9',
-    projectId: '1',
+    projectId: '156235',
     title: 'Add logging to daily CRON',
     description: '',
     startDate: new Date(),
@@ -80,7 +80,7 @@ export const MOCK_TASKS_DATA: Task[] = [
   // DONE
   {
     id: '10',
-    projectId: '1',
+    projectId: '156235',
     title: 'Set up DD dashboards for Lambda listener',
     description: '',
     startDate: new Date(),
