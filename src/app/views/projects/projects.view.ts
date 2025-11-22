@@ -14,7 +14,6 @@ import { SharedModule } from '../../components/shared/shared.module';
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.view.html',
-  styleUrl: './projects.view.scss',
   imports: [SharedModule, ProjectsTableComponent, ProjectFormComponent],
 })
 export class ProjectsView implements OnInit {
@@ -67,7 +66,7 @@ export class ProjectsView implements OnInit {
   /**
    * Handles creation of new projects
    */
-  onProjectCreated(projectRequest: CreateProjectRequest) {
+  onHandleCreatProject(projectRequest: CreateProjectRequest) {
     this.projectService
       .createProject(projectRequest)
       .pipe(takeUntil(this.destroy$))
@@ -83,7 +82,7 @@ export class ProjectsView implements OnInit {
       });
   }
 
-  onProjectUpdated(updatedProject: UpdateProjectRequest) {
+  onHandleUpdateProject(updatedProject: UpdateProjectRequest) {
     const projectId = updatedProject.id;
     const updatedProjectData: Partial<Project> = {
       name: updatedProject.name,

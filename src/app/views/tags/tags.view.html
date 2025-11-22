@@ -1,1 +1,41 @@
-<p>Tags work!</p>
+<app-title title="Tags"></app-title>
+<div class="w-[90%] mx-auto mt-8">
+  <div class="flex justify-end my-4">
+    <button
+      class="px-4 py-2.5 bg-lime-300 rounded-md cursor-pointer shadow-xs hover:shadow-lg hover:shadow-lime-100 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center gap-2"
+      (click)="addNewTag()"
+    >
+      <app-icon [icon]="'add'" /> Add new tag
+    </button>
+  </div>
+  <div>
+    <app-tags-table
+      [tags]="tags"
+      (editTag)="openTagModal($event)"
+      (deleteTag)="deleteConfirmationModal($event)"
+    >
+    </app-tags-table>
+  </div>
+</div>
+
+<app-modal
+  [isOpen]="isModalOpen"
+  [title]="selectedTag && modalAction === 'upsert' ? 'Edit Tag ' : !selectedTag && modalAction === 'upsert' ? 'New Tag' : 'Delete tag'"
+  (closeModal)="closeModal()"
+>
+  @if (modalAction === 'upsert') {
+  <app-tag-form
+    [existingTag]="selectedTag"
+    (tagCreated)="onHandleCreatTag($event)"
+    (tagUpdated)="onHandleUpdateTag($event)"
+    (modalClosed)="closeModal()"
+  ></app-tag-form>
+  } 
+  @if (modalAction === 'delete') {
+    <app-delete-confirmation
+    [title]="`Are you sure you want to delete the tag '${selectedTag?.name}' ?`"
+    (confirmed)="handleDeleteTag()"
+    (cancelled)="closeModal()"
+    />
+  }
+</app-modal>

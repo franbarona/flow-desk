@@ -1,0 +1,45 @@
+<form
+  [formGroup]="tagForm"
+  (ngSubmit)="onSubmit()"
+  class="p-6 space-y-6 overflow-y-auto max-h-[70vh]"
+>
+  <!-- Name -->
+  <div class="space-y-4 gap-4">
+    <div class="flex-1">
+      <label for="name" class="block text-sm font-medium text-gray-700">
+        Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400/80"
+        [class.border-red-500]="nameErrors"
+        placeholder="Enter task name"
+      />
+      @if (nameErrors) {
+      <p class="text-sm text-red-600">{{ nameErrors }}</p>
+      }
+    </div>
+    <div>
+      <label for="color" class="block text-sm font-medium text-gray-700"> Color </label>
+      <app-color-picker [selectedColor]="currentColor" (colorSelected)="onColorSelected($event)" />
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+    <app-button
+      label="Cancel"
+      type="button"
+      [style]="'secondary'"
+      (action)="closeModal()"
+    ></app-button>
+    <app-button
+      [label]="isEditMode ? 'Update Project' : 'Create Project'"
+      type="submit"
+      [style]="'primary'"
+      [disabled]="!isFormValid"
+    ></app-button>
+  </div>
+</form>

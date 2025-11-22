@@ -10,42 +10,37 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
-import { Project } from '../../models/project.interface';
+import { Tag } from '../../models/tag.interface';
 import { TableAction, TableColumn } from '../../models/table.interface';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-projects-table',
+  selector: 'app-tags-table',
   standalone: true,
   imports: [SharedModule],
-  templateUrl: './projects-table.component.html',
+  templateUrl: './tags-table.component.html',
 })
-export class ProjectsTableComponent implements AfterViewInit {
+export class TagsTableComponent implements AfterViewInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
 
-  @Input() projects: Project[] = [];
+  @Input() tags: Tag[] = [];
   @Input() isLoading: boolean = false;
-  @Output() editProject = new EventEmitter<Project>();
-  @Output() deleteProject = new EventEmitter<Project>();
+  @Output() editTag = new EventEmitter<Tag>();
+  @Output() deleteTag = new EventEmitter<Tag>();
   @ViewChild('idTemplate') idTemplate!: TemplateRef<any>;
   @ViewChild('colorTemplate') colorTemplate!: TemplateRef<any>;
 
-  columns: TableColumn<Project>[] = [];
-  actions: TableAction<Project>[] = [
+  columns: TableColumn<Tag>[] = [];
+  actions: TableAction<Tag>[] = [
     {
       label: '',
-      action: (item) => this.navigateToProject(item.slug),
-      icon: 'call_made',
-    },
-    {
-      label: '',
-      action: (item) => this.onEditProject(item),
+      action: (item) => this.onEditTag(item),
       icon: 'edit_square',
     },
     {
       label: '',
-      action: (item) => this.onDeleteProject(item),
+      action: (item) => this.onDeleteTag(item),
       icon: 'delete',
     },
   ];
@@ -75,15 +70,15 @@ export class ProjectsTableComponent implements AfterViewInit {
   }
 
   // Event actions
-  navigateToProject(slug: string) {
-    this.router.navigate(['/project', slug]);
+  navigateToTag(slug: string) {
+    this.router.navigate(['/tag', slug]);
   }
 
-  onEditProject(project: Project): void {
-    this.editProject.emit(project);
+  onEditTag(tag: Tag): void {
+    this.editTag.emit(tag);
   }
 
-  onDeleteProject(project: Project): void {
-    this.deleteProject.emit(project);
+  onDeleteTag(tag: Tag): void {
+    this.deleteTag.emit(tag);
   }
 }

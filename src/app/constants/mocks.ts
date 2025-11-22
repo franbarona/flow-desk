@@ -1,23 +1,25 @@
-import { User, Column, EnumTaskPriority, Tag, Task } from '../models/task.interface';
+import {User} from '../models/user.interface';
 import { Project } from '../models/project.interface';
+import { Tag } from '../models/tag.interface';
+import { Column, EnumTaskPriority, Task } from '../models/task.interface';
 
 export const MOCK_USERS_DATA: User[] = [
-  { id: 1, name: 'Carlos', surnames: 'Rodríguez', avatarUrl: 'users/user1.jpg' },
-  { id: 2, name: 'María', surnames: 'López Hernández', avatarUrl: 'users/user2.jpg' },
-  { id: 3, name: 'Andrea', surnames: 'Martínez', avatarUrl: 'users/user3.jpg' },
-  { id: 4, name: 'Javier', surnames: 'Santos Pérez', avatarUrl: 'users/user4.jpg' },
-  { id: 5, name: 'Ana', surnames: 'Ortega', avatarUrl: 'users/user5.jpg' },
-  { id: 6, name: 'Leandro', surnames: 'Zurrik', avatarUrl: 'users/user6.jpg' },
-  { id: 7, name: 'Marc', surnames: 'Dojvik', avatarUrl: 'users/user7.jpg' },
+  { id: '1', name: 'Carlos', surnames: 'Rodríguez', avatarUrl: 'users/user1.jpg' },
+  { id: '2', name: 'María', surnames: 'López Hernández', avatarUrl: 'users/user2.jpg' },
+  { id: '3', name: 'Andrea', surnames: 'Martínez', avatarUrl: 'users/user3.jpg' },
+  { id: '4', name: 'Javier', surnames: 'Santos Pérez', avatarUrl: 'users/user4.jpg' },
+  { id: '5', name: 'Ana', surnames: 'Ortega', avatarUrl: 'users/user5.jpg' },
+  { id: '6', name: 'Leandro', surnames: 'Zurrik', avatarUrl: 'users/user6.jpg' },
+  { id: '7', name: 'Marc', surnames: 'Dojvik', avatarUrl: 'users/user7.jpg' },
 ];
 
 export const MOCK_TAGS_DATA: Tag[] = [
-  { id: 1, name: 'Prototype', color: '#6D28D9' },
-  { id: 2, name: 'Research', color: '#BE185D' },
-  { id: 3, name: 'Design', color: '#1D4ED8' },
-  { id: 4, name: 'Frontend', color: '#B91C1C' },
-  { id: 5, name: 'Backend', color: '#047857' },
-  { id: 6, name: 'Design system', color: '#A16207' },
+  { id: '1', name: 'Prototype', color: '#6D28D9' },
+  { id: '2', name: 'Research', color: '#BE185D' },
+  { id: '3', name: 'Design', color: '#1D4ED8' },
+  { id: '4', name: 'Frontend', color: '#B91C1C' },
+  { id: '5', name: 'Backend', color: '#047857' },
+  { id: '6', name: 'Design system', color: '#A16207' },
 ];
 
 export const MOCK_PROJECTS_DATA: Project[] = [

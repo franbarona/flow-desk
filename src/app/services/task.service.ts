@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { Task, User, Tag, CreateTaskRequest, EnumTaskPriority } from '../models/task.interface';
+import { Task, CreateTaskRequest, EnumTaskPriority } from '../models/task.interface';
 import { MOCK_TASKS_DATA, MOCK_TAGS_DATA, MOCK_USERS_DATA } from '../constants/mocks';
 
 @Injectable({
@@ -16,14 +16,6 @@ export class TaskService {
 
   getTasks(projectId: string): Observable<Task[]> {
     return of(this.tasksValue.filter(task => task.projectId === projectId));
-  }
-
-  getUsers(): Observable<User[]> {
-    return of(MOCK_USERS_DATA);
-  }
-
-  getTags(): Observable<Tag[]> {
-    return of(MOCK_TAGS_DATA);
   }
 
   createTask(taskRequest: CreateTaskRequest): Observable<Task> {

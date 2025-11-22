@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import * as uuid from 'uuid';
-import { nanoid } from 'nanoid';
 import { customAlphabet } from 'nanoid';
 import { Project, ProjectRequest } from '../models/project.interface';
 import { MOCK_PROJECTS_DATA } from '../constants/mocks';

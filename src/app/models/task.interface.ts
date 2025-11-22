@@ -1,3 +1,6 @@
+import { Tag } from "./tag.interface";
+import { User } from "./user.interface";
+
 export interface Column {
   id: string;
   title: string;
@@ -17,19 +20,6 @@ export interface Task {
   updatedAt?: Date;
 }
 
-export interface Tag {
-  id: number;
-  name: string;
-  color: string;
-}
-
-export interface User {
-  id: number;
-  name: string;
-  surnames: string;
-  avatarUrl: string;
-}
-
 export interface DragData {
   cardId: string;
 }
@@ -47,8 +37,8 @@ export interface TaskRequest {
   startDate: string;
   endDate: string;
   status: 'backlog' | 'todo' | 'doing' | 'done';
-  assignedUserIds: number[];
-  tagIds: number[];
+  assignedUserIds: string[];
+  tagIds: string[];
 }
 
 export interface CreateTaskRequest extends TaskRequest {}

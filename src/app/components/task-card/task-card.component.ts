@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {User, EnumTaskPriority, Tag, Task} from '../../models/task.interface';
+import { Component, Input } from '@angular/core';
+import { User } from '../../models/user.interface';
+import { Tag } from '../../models/tag.interface';
+import { EnumTaskPriority, Task } from '../../models/task.interface';
 import { CommonModule } from '@angular/common';
 import { MOCK_TAGS_DATA, MOCK_USERS_DATA } from '../../constants/mocks';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -10,18 +12,15 @@ import { IconComponent } from '../shared/icon/icon.component';
   templateUrl: './task-card.component.html',
   styleUrl: './task-card.component.scss',
 })
-export class TaskCardComponent implements OnInit {
+export class TaskCardComponent {
   @Input() task!: Task;
 
-  ngOnInit(): void {
+  getAssignedUserData(userId: string): User {
+    return MOCK_USERS_DATA.find((user) => user.id === userId)!;
   }
 
-  getAssignedUserData(userId: number): User {
-    return MOCK_USERS_DATA.find(user => user.id === userId)!;
-  }
-
-  getTagData(tagId: number): Tag {
-    return MOCK_TAGS_DATA.find(tag => tag.id === tagId)!;
+  getTagData(tagId: string): Tag {
+    return MOCK_TAGS_DATA.find((tag) => tag.id === tagId)!;
   }
 
   getPriorityColor(): string {

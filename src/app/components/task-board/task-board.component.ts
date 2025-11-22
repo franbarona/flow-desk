@@ -1,11 +1,11 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { User } from '../../models/user.interface';
+import { Tag } from '../../models/tag.interface';
 import {
   Column,
   CreateTaskRequest,
-  Tag,
   Task,
   UpdateTaskRequest,
-  User,
 } from '../../models/task.interface';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import { MOCK_COLUMNS_DATA } from '../../constants/mocks';
@@ -16,6 +16,8 @@ import { TaskFormComponent } from '../task-form/task-form.component';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { SharedModule } from '../shared/shared.module';
+import { UserService } from '../../services/user.service';
+import { TagService } from '../../services/tag.service';
 
 @Component({
   selector: 'app-task-board',
@@ -38,6 +40,8 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
   isAnimating: boolean = false;
 
   private readonly route = inject(ActivatedRoute);
+  private readonly userService = inject(UserService);
+  private readonly tagService = inject(TagService);
   private readonly taskService = inject(TaskService);
   private readonly modalService = inject(ModalService);
   private readonly projectService = inject(ProjectService);
@@ -65,12 +69,12 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
   }
 
   loadTaskBoardData(): void {
-    this.taskService
+    this.userService
       .getUsers()
       .pipe(takeUntil(this.destroy$))
       .subscribe((users) => (this.users = users));
 
-    this.taskService
+    this.tagService
       .getTags()
       .pipe(takeUntil(this.destroy$))
       .subscribe((tags) => (this.tags = tags));

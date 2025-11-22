@@ -1,6 +1,40 @@
-<div class="sticky top-0 bg-white w-full z-10 border-b border-gray-200">
-  <h1 class="px-8 pt-6 pb-4 text-gray-700 text-3xl">Users</h1>
+<app-title title="Users"></app-title>
+
+<div class="w-[90%] mx-auto mt-8">
+  <div class="flex justify-end my-4">
+    <button
+      class="px-4 py-2.5 bg-lime-300 rounded-md cursor-pointer shadow-xs hover:shadow-lg hover:shadow-lime-100 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center gap-2"
+      (click)="addNewUser()"
+    >
+      <app-icon [icon]="'add'" /> Add new user
+    </button>
+  </div>
+  <app-users-table
+    [users]="users"
+    (editUser)="openUserModal($event)"
+    (deleteUser)="deleteConfirmationModal($event)"
+  >
+  </app-users-table>
 </div>
-<div class="w-[90%] mx-auto mt-12">
-  <app-users-table [users]="users"> </app-users-table>
-</div>
+
+<app-modal
+  [isOpen]="isModalOpen"
+  [title]="selectedUser && modalAction === 'upsert' ? 'Edit User ' : !selectedUser && modalAction === 'upsert' ? 'New User' : 'Delete User'"
+  (closeModal)="closeModal()"
+>
+  @if (modalAction === 'upsert') {
+  <app-user-form
+    [existingUser]="selectedUser"
+    (userCreated)="onHandleCreatUser($event)"
+    (userUpdated)="onHandleUpdateUser($event)"
+    (modalClosed)="closeModal()"
+  ></app-user-form>
+  } 
+  @if (modalAction === 'delete') {
+    <app-delete-confirmation
+    [title]="`Are you sure you want to delete the user '${selectedUser?.name} ${selectedUser?.surnames}' ?`"
+    (confirmed)="handleDeleteUser()"
+    (cancelled)="closeModal()"
+    />
+  }
+</app-modal>

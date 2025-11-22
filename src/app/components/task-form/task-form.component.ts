@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CreateTaskRequest, Tag, Task, UpdateTaskRequest, User } from '../../models/task.interface';
+import { User } from "../../models/user.interface";
+import { Tag } from "../../models/tag.interface";
+import { CreateTaskRequest, Task, UpdateTaskRequest } from '../../models/task.interface';
 import { SharedModule } from '../shared/shared.module';
 import { ButtonComponent } from '../shared/button/button.component';
 
@@ -19,8 +21,8 @@ export class TaskFormComponent implements OnChanges {
   @Output() modalClosed = new EventEmitter<void>();
 
   taskForm: FormGroup;
-  selectedUsers: Set<number> = new Set();
-  selectedTags: Set<number> = new Set();
+  selectedUsers: Set<string> = new Set();
+  selectedTags: Set<string> = new Set();
   isUserDropdownOpen = false;
   isEditMode = false;
   projectOptions = [
@@ -149,7 +151,7 @@ export class TaskFormComponent implements OnChanges {
     this.modalClosed.emit();
   }
 
-  toggleUserSelection(userId: number) {
+  toggleUserSelection(userId: string) {
     if (this.selectedUsers.has(userId)) {
       this.selectedUsers.delete(userId);
     } else {
@@ -157,7 +159,7 @@ export class TaskFormComponent implements OnChanges {
     }
   }
 
-  toggleTagSelection(tagId: number) {
+  toggleTagSelection(tagId: string) {
     if (this.selectedTags.has(tagId)) {
       this.selectedTags.delete(tagId);
     } else {
@@ -165,11 +167,11 @@ export class TaskFormComponent implements OnChanges {
     }
   }
 
-  isUserSelected(userId: number): boolean {
+  isUserSelected(userId: string): boolean {
     return this.selectedUsers.has(userId);
   }
 
-  isTagSelected(tagId: number): boolean {
+  isTagSelected(tagId: string): boolean {
     return this.selectedTags.has(tagId);
   }
 

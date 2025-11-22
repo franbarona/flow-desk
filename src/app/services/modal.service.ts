@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { User, Tag } from '../models/task.interface';
+import { Tag } from '../models/tag.interface';
+import { User } from '../models/user.interface';
 
 export interface ModalData {
   users?: User[];
@@ -9,7 +10,7 @@ export interface ModalData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModalService {
   private readonly isModalOpenSubject = new BehaviorSubject<boolean>(false);
