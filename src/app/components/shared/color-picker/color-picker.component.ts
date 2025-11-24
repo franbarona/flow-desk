@@ -14,15 +14,21 @@ export class ColorPickerComponent {
   @Output() colorSelected = new EventEmitter<string>();
 
   colors = [
-    { name: 'Black', value: '#000' },
-    { name: 'Red', value: 'oklch(64.5% 0.246 16.439)' },
-    { name: 'Blue', value: 'oklch(62.3% 0.214 259.815)' },
-    { name: 'Green', value: 'oklch(72.3% 0.219 149.579)' },
-    { name: 'Yellow', value: 'oklch(79.5% 0.184 86.047)' },
-    { name: 'Purple', value: 'oklch(60.6% 0.25 292.717)' },
-    { name: 'Pink', value: 'oklch(82.3% 0.12 346.018)' },
-    { name: 'Orange', value: 'oklch(75% 0.183 55.934)' },
-    { name: 'Gray', value: 'oklch(55.1% 0.027 264.364)' }
+    'red',
+    'orange',
+    'amber',
+    'yellow',
+    'lime',
+    'green',
+    'teal',
+    'sky',
+    'blue',
+    'purple',
+    'pink',
+    'rose',
+    'slate',
+    'gray',
+    'black',
   ];
 
   selectColor(color: string): void {
@@ -32,19 +38,5 @@ export class ColorPickerComponent {
 
   trackByColor(index: number, color: any): string {
     return color.value;
-  }
-
-  getContrastColor(backgroundColor: string): string {
-    // Convierte el color hex a RGB
-    const hex = backgroundColor.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    
-    // Calcula la luminancia
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
-    // Retorna blanco o negro según la luminancia
-    return luminance > 0.5 ? '#000000' : '#ffffff';
   }
 }

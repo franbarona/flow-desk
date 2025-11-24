@@ -6,9 +6,21 @@
       #{{ value }}
     </span>
   </ng-template>
-  <ng-template #colorTemplate let-value="value" let-row="row">
-    @if (value) {
-    <app-icon [icon]="'nearby'" [color]="value" />
-    }
+  <ng-template
+    #tagTemplate
+    let-value="value"
+    let-row="row"
+    let-colorValue="colorValue"
+    let-tagName="tagName"
+    let-isActive="isActive"
+    let-showBorder="showBorder"
+    let-brightness="brightness"
+  >
+    <div
+      class="flex flex-nowrap items-center justify-center w-fit rounded-xl text-xs font-bold px-4 py-1"
+      [class]="`bg-${colorValue}-light text-${colorValue}-dark`"
+    >
+      {{ tagName }}
+    </div>
   </ng-template>
 </app-table>

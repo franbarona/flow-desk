@@ -31,12 +31,11 @@
   <h3 class="font-bold text-gray-900 line-clamp-2">{{ task.title }}</h3>
 
   <!-- Tags -->
-  <div class="flex flex-wrap gap-1">
+  <div class="flex flex-wrap gap-2">
     @for (tag of task.tags; track $index) {
     <span
       class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-2xl"
-      [style.backgroundColor]="tag.color + '20'"
-      [style.color]="tag.color"
+      [class]="`bg-${tag.color}-light text-${tag.color}-dark`"
     >
       {{ tag.name }}
     </span>

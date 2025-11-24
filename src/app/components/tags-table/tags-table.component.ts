@@ -29,7 +29,7 @@ export class TagsTableComponent implements AfterViewInit {
   @Output() editTag = new EventEmitter<Tag>();
   @Output() deleteTag = new EventEmitter<Tag>();
   @ViewChild('idTemplate') idTemplate!: TemplateRef<any>;
-  @ViewChild('colorTemplate') colorTemplate!: TemplateRef<any>;
+  @ViewChild('tagTemplate') tagTemplate!: TemplateRef<any>;
 
   columns: TableColumn<Tag>[] = [];
   actions: TableAction<Tag>[] = [
@@ -57,12 +57,15 @@ export class TagsTableComponent implements AfterViewInit {
         cellClass: '',
       },
       {
-        key: 'color',
-        title: '',
-        width: '5em',
-        cellTemplate: this.colorTemplate,
+        key: 'name',
+        title: 'Tag',
+        sortable: true,
+        cellTemplate: this.tagTemplate,
+        templateParams: {
+          colorValue: (row: Tag) => row.color,
+          tagName: (row: Tag) => row.name,
+        }
       },
-      { key: 'name', title: 'Name', sortable: true },
     ];
 
     // Force change detection

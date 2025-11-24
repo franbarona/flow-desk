@@ -14,18 +14,18 @@ export const MOCK_USERS_DATA: User[] = [
 ];
 
 export const MOCK_TAGS_DATA: Tag[] = [
-  { id: '1', name: 'Prototype', color: '#6D28D9' },
-  { id: '2', name: 'Research', color: '#BE185D' },
-  { id: '3', name: 'Design', color: '#1D4ED8' },
-  { id: '4', name: 'Frontend', color: '#B91C1C' },
-  { id: '5', name: 'Backend', color: '#047857' },
-  { id: '6', name: 'Design system', color: '#A16207' },
+  { id: '1', name: 'Prototype', color: 'violet' },
+  { id: '2', name: 'Research', color: 'pink' },
+  { id: '3', name: 'Design', color: 'blue' },
+  { id: '4', name: 'Frontend', color: 'red' },
+  { id: '5', name: 'Backend', color: 'teal' },
+  { id: '6', name: 'Design system', color: 'yellow' },
 ];
 
 export const MOCK_PROJECTS_DATA: Project[] = [
-  { id: '156235', name: 'Median', slug: 'median', color:'oklch(82.3% 0.12 346.018)' },
-  { id: '839328', name: 'Risen', slug: 'risen', color: 'oklch(62.3% 0.214 259.815)' },
-  { id: '524946', name: 'Strata Insurance', slug: 'strata-insurance', color: 'oklch(79.5% 0.184 86.047)' },
+  { id: '156235', name: 'Median', slug: 'median', color:'pink' },
+  { id: '839328', name: 'Risen', slug: 'risen', color: 'blue' },
+  { id: '524946', name: 'Strata Insurance', slug: 'strata-insurance', color: 'amber' },
 ];
 
 export const MOCK_TASKS_DATA: Task[] = [

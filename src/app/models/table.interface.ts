@@ -10,6 +10,7 @@ export interface TableColumn<T = any> {
   cellClass?: string;
   cellTemplate?: TemplateRef<any>;
   headerClass?: string;
+  templateParams?: { [key: string]: any | ((row: T, index: number) => any) };
 }
 
 export interface TableAction<T = any> {

@@ -138,13 +138,7 @@
             <ng-container
               *ngTemplateOutlet="
                 column.cellTemplate;
-                context: {
-                  $implicit: getCellValue(row, column),
-                  value: getCellValue(row, column),
-                  row: row,
-                  column: column,
-                  index: $index
-                }
+                context: buildTemplateContext(row, column, $index)
               "
             >
             </ng-container>

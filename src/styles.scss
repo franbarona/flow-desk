@@ -1,1 +1,372 @@
 @use "tailwindcss";
+
+/* Definir utilidades personalizadas */
+@layer utilities {
+  .bg-red-light {
+    @apply bg-red-100;
+  }
+
+  .bg-red {
+    @apply bg-red-500;
+  }
+
+  .text-red {
+    @apply text-red-500;
+  }
+
+  .text-red-dark {
+    @apply text-red-800;
+  }
+
+  .bg-orange-light {
+    @apply bg-orange-100;
+  }
+
+  .bg-orange {
+    @apply bg-orange-500;
+  }
+
+  .text-orange {
+    @apply text-orange-500;
+  }
+
+  .text-orange-dark {
+    @apply text-orange-800;
+  }
+
+  .bg-amber-light {
+    @apply bg-amber-100;
+  }
+
+  .bg-amber {
+    @apply bg-amber-500;
+  }
+
+  .text-amber {
+    @apply text-amber-500;
+  }
+
+  .text-amber-dark {
+    @apply text-amber-800;
+  }
+
+  .bg-yellow-light {
+    @apply bg-yellow-100;
+  }
+
+  .bg-yellow {
+    @apply bg-yellow-500;
+  }
+
+  .text-yellow {
+    @apply text-yellow-500;
+  }
+
+  .text-yellow-dark {
+    @apply text-yellow-800;
+  }
+
+  .bg-lime-light {
+    @apply bg-lime-100;
+  }
+
+  .bg-lime {
+    @apply bg-lime-500;
+  }
+
+  .text-lime {
+    @apply text-lime-500;
+  }
+
+  .text-lime-dark {
+    @apply text-lime-800;
+  }
+
+  .bg-green-light {
+    @apply bg-green-100;
+  }
+
+  .bg-green {
+    @apply bg-green-500;
+  }
+
+  .text-green {
+    @apply text-green-500;
+  }
+
+  .text-green-dark {
+    @apply text-green-800;
+  }
+
+  .bg-emerald-light {
+    @apply bg-emerald-100;
+  }
+
+  .bg-emerald {
+    @apply bg-emerald-500;
+  }
+
+  .text-emerald {
+    @apply text-emerald-500;
+  }
+
+  .text-emerald-dark {
+    @apply text-emerald-800;
+  }
+
+  .bg-teal-light {
+    @apply bg-teal-100;
+  }
+
+  .bg-teal {
+    @apply bg-teal-500;
+  }
+
+  .text-teal {
+    @apply text-teal-500;
+  }
+
+  .text-teal-dark {
+    @apply text-teal-800;
+  }
+
+  .bg-cyan-light {
+    @apply bg-cyan-100;
+  }
+
+  .bg-cyan {
+    @apply bg-cyan-500;
+  }
+
+  .text-cyan {
+    @apply text-cyan-500;
+  }
+
+  .text-cyan-dark {
+    @apply text-cyan-800;
+  }
+
+  .bg-sky-light {
+    @apply bg-sky-100;
+  }
+
+  .bg-sky {
+    @apply bg-sky-500;
+  }
+
+  .text-sky {
+    @apply text-sky-500;
+  }
+
+  .text-sky-dark {
+    @apply text-sky-800;
+  }
+
+  .bg-blue-light {
+    @apply bg-blue-100;
+  }
+
+  .bg-blue {
+    @apply bg-blue-500;
+  }
+
+  .text-blue {
+    @apply text-blue-500;
+  }
+
+  .text-blue-dark {
+    @apply text-blue-800;
+  }
+
+  .bg-indigo-light {
+    @apply bg-indigo-100;
+  }
+
+  .bg-indigo {
+    @apply bg-indigo-500;
+  }
+
+  .text-indigo {
+    @apply text-indigo-500;
+  }
+
+  .text-indigo-dark {
+    @apply text-indigo-800;
+  }
+
+  .bg-violet-light {
+    @apply bg-violet-100;
+  }
+
+  .bg-violet {
+    @apply bg-violet-500;
+  }
+
+  .text-violet {
+    @apply text-violet-500;
+  }
+
+  .text-violet-dark {
+    @apply text-violet-800;
+  }
+
+  .bg-purple-light {
+    @apply bg-purple-100;
+  }
+
+  .bg-purple {
+    @apply bg-purple-500;
+  }
+
+  .text-purple {
+    @apply text-purple-500;
+  }
+
+  .text-purple-dark {
+    @apply text-purple-800;
+  }
+
+  .bg-fuchsia-light {
+    @apply bg-fuchsia-100;
+  }
+
+  .bg-fuchsia {
+    @apply bg-fuchsia-500;
+  }
+
+  .text-fuchsia {
+    @apply text-fuchsia-500;
+  }
+
+  .text-fuchsia-dark {
+    @apply text-fuchsia-800;
+  }
+
+  .bg-pink-light {
+    @apply bg-pink-100;
+  }
+
+  .bg-pink {
+    @apply bg-pink-500;
+  }
+
+  .text-pink {
+    @apply text-pink-500;
+  }
+
+  .text-pink-dark {
+    @apply text-pink-800;
+  }
+
+  .bg-rose-light {
+    @apply bg-rose-100;
+  }
+
+  .bg-rose {
+    @apply bg-rose-500;
+  }
+
+  .text-rose {
+    @apply text-rose-500;
+  }
+
+  .text-rose-dark {
+    @apply text-rose-800;
+  }
+
+  .bg-slate-light {
+    @apply bg-slate-100;
+  }
+
+  .bg-slate {
+    @apply bg-slate-500;
+  }
+
+  .text-slate {
+    @apply text-slate-500;
+  }
+
+  .text-slate-dark {
+    @apply text-slate-800;
+  }
+
+  .bg-gray-light {
+    @apply bg-gray-100;
+  }
+
+  .bg-gray {
+    @apply bg-gray-500;
+  }
+
+  .text-gray {
+    @apply text-gray-500;
+  }
+
+  .text-gray-dark {
+    @apply text-gray-800;
+  }
+
+  .bg-zinc-light {
+    @apply bg-zinc-100;
+  }
+
+  .bg-zinc {
+    @apply bg-zinc-500;
+  }
+
+  .text-zinc {
+    @apply text-zinc-500;
+  }
+
+  .text-zinc-dark {
+    @apply text-zinc-800;
+  }
+
+  .bg-neutral-light {
+    @apply bg-neutral-100;
+  }
+
+  .bg-neutral {
+    @apply bg-neutral-500;
+  }
+
+  .text-neutral {
+    @apply text-neutral-500;
+  }
+
+  .text-neutral-dark {
+    @apply text-neutral-800;
+  }
+
+  .bg-stone-light {
+    @apply bg-stone-100;
+  }
+
+  .bg-stone {
+    @apply bg-stone-500;
+  }
+
+  .text-stone {
+    @apply text-stone-500;
+  }
+
+  .text-stone-dark {
+    @apply text-stone-800;
+  }
+
+  .bg-black-light {
+    @apply bg-black;
+  }
+
+  .bg-black {
+    @apply bg-black;
+  }
+
+  .text-black {
+    @apply text-black;
+  }
+
+  .text-black-dark {
+    @apply text-black;
+  }
+}

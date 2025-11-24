@@ -163,6 +163,28 @@ export class TableComponent<T = any> implements OnInit, OnChanges {
     return column.formatter ? column.formatter(value, row) : value;
   }
 
+  buildTemplateContext(row: T, column: TableColumn<T>, index: number): any {
+    const baseContext: Record<string, any> = {
+      $implicit: this.getCellValue(row, column),
+      value: this.getCellValue(row, column),
+      row: row,
+      column: column,
+      index: index
+    };
+
+    // Agregar parámetros personalizados de la columna
+    if (column.templateParams) {
+      Object.keys(column.templateParams).forEach(key => {
+        const paramValue = column.templateParams![key];
+        baseContext[key] = typeof paramValue === 'function'
+          ? paramValue(row, index)
+          : paramValue;
+      });
+    }
+
+    return baseContext;
+  }
+
   private getNestedProperty(obj: any, path: string): any {
     return path.split('.').reduce((current, key) => current?.[key], obj);
   }
