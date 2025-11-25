@@ -1,72 +1,138 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { customAlphabet } from 'nanoid';
-import { User, UserRequest } from '../models/user.interface';
-import { MOCK_USERS_DATA } from '../constants/mocks';
+import { CreateUserRequest, User } from '../models/user.interface';
+import { UtilsService } from './utils.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  users$ = new BehaviorSubject<User[]>(MOCK_USERS_DATA);
+  private readonly TAGS_STORAGE_KEY = 'users';
+  private readonly usersSubject = new BehaviorSubject<User[]>(this.loadUsersFromStorage());
+  private readonly utilsService = inject(UtilsService);
+  users$ = this.usersSubject.asObservable();
 
-  get usersValue(): User[] {
-    return this.users$.value;
-  }
-
+  /**
+   * Get all users
+   */
   getUsers(): Observable<User[]> {
-    return this.users$.asObservable();
+    return this.users$;
   }
 
-  createUser(userRequest: UserRequest): Observable<User> {
-    const noZeroNanoid = customAlphabet('123456789', 6); //ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  /**
+   * Get all users (snapshot actual)
+   */
+  getUsersSnapshot(): User[] {
+    return this.usersSubject.value;
+  }
+
+  /**
+   *Get user by ID
+   */
+  getUserById(id: string): User | undefined {
+    return this.usersSubject.value.find((user) => user.id === id);
+  }
+
+  /**
+   * Create new user
+   */
+  createUser(createUserRequest: CreateUserRequest): Observable<User> {
     const newUser: User = {
-      id: noZeroNanoid(),
-      name: userRequest.name,
-      surnames: userRequest.surnames,
-      avatarUrl: userRequest.avatarUrl || '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      id: this.utilsService.generateId(),
+      name: createUserRequest.name,
+      surnames: createUserRequest.surnames,
+      avatarUrl: createUserRequest.avatarUrl || '',
     };
 
-    const currentUsers = this.users$.value;
-    this.users$.next([...currentUsers, newUser]);
+    const currentUsers = this.usersSubject.value;
+    this.usersSubject.next([...currentUsers, newUser]);
+    this.saveUsersToStorage();
 
     return of(newUser);
   }
 
-  updateUser(userId: string, updates: Partial<User>): Observable<User | null> {
-    const currentUsers = this.users$.value;
-    const userIndex = currentUsers.findIndex((user) => user.id === userId);
+  /**
+   * Update current user
+   */
+  updateUser(id: string, updates: Partial<Omit<User, 'id'>>): Observable<User | undefined> {
+    const currentUsers = this.usersSubject.value;
+    const userIndex = currentUsers.findIndex((user) => user.id === id);
 
     if (userIndex === -1) {
-      return of(null);
+      return of(undefined);
     }
 
-    const updatedUser = {
+    const updatedUser: User = {
       ...currentUsers[userIndex],
       ...updates,
-      updatedAt: new Date(),
     };
 
-    const updatedUsers = [...currentUsers];
-    updatedUsers[userIndex] = updatedUser;
-    this.users$.next(updatedUsers);
+    const newUsers = [
+      ...currentUsers.slice(0, userIndex),
+      updatedUser,
+      ...currentUsers.slice(userIndex + 1),
+    ];
+
+    this.usersSubject.next(newUsers);
+    this.saveUsersToStorage();
 
     return of(updatedUser);
   }
 
-  deleteUser(userId: string): Observable<boolean> {
-    const currentUsers = this.users$.value;
-    const userIndex = currentUsers.findIndex((user) => user.id === userId);
+  /**
+   * Delete user
+   */
+  deleteUser(id: string): Observable<boolean> {
+    const currentUsers = this.usersSubject.value;
+    const filteredUsers = currentUsers.filter((user) => user.id !== id);
 
-    if (userIndex === -1) {
-      return of(false); // User not founded
+    if (filteredUsers.length === currentUsers.length) {
+      return of(false); // User no encontrado
     }
 
-    const updatedUsers = currentUsers.filter((user) => user.id !== userId);
-    this.users$.next(updatedUsers);
+    this.usersSubject.next(filteredUsers);
+    this.saveUsersToStorage();
 
     return of(true);
+  }
+
+  /**
+   * Clear all users (util for testing)
+   */
+  clearAll(): void {
+    this.usersSubject.next([]);
+    globalThis.localStorage.removeItem(this.TAGS_STORAGE_KEY);
+  }
+
+  // ============ PRIVATE METHODS ============
+
+  private loadUsersFromStorage(): User[] {
+    try {
+      const stored = globalThis.localStorage?.getItem(this.TAGS_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Error loading users from storage:', error);
+      return [];
+    }
+  }
+
+  private saveUsersToStorage(): void {
+    try {
+      globalThis.localStorage.setItem(
+        this.TAGS_STORAGE_KEY,
+        JSON.stringify(this.usersSubject.value)
+      );
+    } catch (error) {
+      console.error('Error saving users to storage:', error);
+    }
+  }
+
+  initializeUsersSampleData(): void {
+    this.createUser({ name: 'Carlos', surnames: 'Rodríguez', avatarUrl: 'users/user1.jpg' });
+    this.createUser({ name: 'Leandro', surnames: 'Zurrik', avatarUrl: 'users/user6.jpg' });
+    this.createUser({ name: 'Andrea', surnames: 'Martínez', avatarUrl: 'users/user3.jpg' });
+    this.createUser({ name: 'Javier', surnames: 'Santos Pérez', avatarUrl: 'users/user4.jpg' });
+    this.createUser({ name: 'Ana', surnames: 'Ortega', avatarUrl: 'users/user5.jpg' });
+    this.createUser({ name: 'Marc', surnames: 'Dojvik', avatarUrl: 'users/user7.jpg' });
   }
 }

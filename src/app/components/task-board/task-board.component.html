@@ -97,6 +97,7 @@
 
 <app-modal [isOpen]="isModalOpen" [title]="selectedTask ? 'Edit Task ' + selectedTask.id : 'New Task'" (closeModal)="closeModal()">
   <app-task-form
+    [projectId]="projectId"
     [users]="users"
     [tags]="tags"
     [existingTask]="selectedTask"

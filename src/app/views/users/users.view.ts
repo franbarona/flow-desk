@@ -39,7 +39,6 @@ export class UsersView implements OnInit {
   }
 
   openUserModal(user: User, event?: MouseEvent) {
-    console.log("ooo")
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -51,7 +50,6 @@ export class UsersView implements OnInit {
   }
 
   deleteConfirmationModal(user: User, event?: MouseEvent) {
-    console.log("eee")
     if (event) {
       event.preventDefault();
       event.stopPropagation();

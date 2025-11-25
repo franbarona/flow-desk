@@ -1,3 +1,4 @@
+import { EnumPriorities } from "../constants/mocks";
 import { Tag } from "./tag.interface";
 import { User } from "./user.interface";
 
@@ -11,34 +12,34 @@ export interface Task {
   title: string;
   description: string;
   status: 'backlog' | 'todo' | 'doing' | 'done';
-  priority: EnumTaskPriority;
+  priority: EnumPriorities;
   startDate: Date;
   endDate: Date;
-  assignedUsers: User[];
-  tags: Tag[];
+  tagIds: string[];
+  assignedUserIds: string[];
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface PopulatedTask extends Task {
+  tags: Tag[]; // populated Tags
+  assignedUsers: User[]; // populated Users
 }
 
 export interface DragData {
   cardId: string;
 }
 
-export enum EnumTaskPriority {
-  LOW = 'Low',
-  MEDIUM = 'Medium',
-  HIGH = 'High',
-}
-
 export interface TaskRequest {
-  priority: EnumTaskPriority;
+  projectId: string,
+  priority: EnumPriorities;
   title: string;
   description: string;
   startDate: string;
   endDate: string;
   status: 'backlog' | 'todo' | 'doing' | 'done';
-  assignedUserIds: string[];
   tagIds: string[];
+  assignedUserIds: string[];
 }
 
 export interface CreateTaskRequest extends TaskRequest {}

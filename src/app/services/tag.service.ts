@@ -1,71 +1,131 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { customAlphabet } from 'nanoid';
-import { Tag, TagRequest } from '../models/tag.interface';
-import { MOCK_TAGS_DATA } from '../constants/mocks';
+import { CreateTagRequest, Tag } from '../models/tag.interface';
+import { UtilsService } from './utils.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TagService {
-  tags$ = new BehaviorSubject<Tag[]>(MOCK_TAGS_DATA);
+  private readonly TAGS_STORAGE_KEY = 'tags';
+  private readonly tagsSubject = new BehaviorSubject<Tag[]>(this.loadTagsFromStorage());
+  private readonly utilsService = inject(UtilsService);
+  tags$ = this.tagsSubject.asObservable();
 
-  get tagsValue(): Tag[] {
-    return this.tags$.value;
-  }
-
+  /**
+   * Get all tags
+   */
   getTags(): Observable<Tag[]> {
-    return this.tags$.asObservable();
+    return this.tags$;
   }
 
-  createTag(tagRequest: TagRequest): Observable<Tag> {
-    const noZeroNanoid = customAlphabet('123456789', 6); //ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  /**
+   * Get all tags (snapshot actual)
+   */
+  getTagsSnapshot(): Tag[] {
+    return this.tagsSubject.value;
+  }
+
+  /**
+   *Get tag by ID
+   */
+  getTagById(id: string): Tag | undefined {
+    return this.tagsSubject.value.find((tag) => tag.id === id);
+  }
+
+  /**
+   * Create new tag
+   */
+  createTag(createTagRequest: CreateTagRequest): Observable<Tag> {
     const newTag: Tag = {
-      id: noZeroNanoid(),
-      name: tagRequest.name,
-      color: tagRequest.color,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      id: this.utilsService.generateId(),
+      name: createTagRequest.name,
+      color: createTagRequest.color,
     };
 
-    const currentTags = this.tags$.value;
-    this.tags$.next([...currentTags, newTag]);
+    const currentTags = this.tagsSubject.value;
+    this.tagsSubject.next([...currentTags, newTag]);
+    this.saveTagsToStorage();
 
     return of(newTag);
   }
 
-  updateTag(tagId: string, updates: Partial<Tag>): Observable<Tag | null> {
-    const currentTags = this.tags$.value;
-    const tagIndex = currentTags.findIndex((tag) => tag.id === tagId);
+  /**
+   * Update current tag
+   */
+  updateTag(id: string, updates: Partial<Omit<Tag, 'id'>>): Observable<Tag | undefined> {
+    const currentTags = this.tagsSubject.value;
+    const tagIndex = currentTags.findIndex((tag) => tag.id === id);
 
     if (tagIndex === -1) {
-      return of(null);
+      return of(undefined);
     }
 
-    const updatedTag = {
+    const updatedTag: Tag = {
       ...currentTags[tagIndex],
       ...updates,
-      updatedAt: new Date(),
     };
 
-    const updatedTags = [...currentTags];
-    updatedTags[tagIndex] = updatedTag;
-    this.tags$.next(updatedTags);
+    const newTags = [
+      ...currentTags.slice(0, tagIndex),
+      updatedTag,
+      ...currentTags.slice(tagIndex + 1),
+    ];
+
+    this.tagsSubject.next(newTags);
+    this.saveTagsToStorage();
 
     return of(updatedTag);
   }
 
-  deleteTag(tagId: string): Observable<boolean> {
-    const currentTags = this.tags$.value;
-    const tagIndex = currentTags.findIndex((tag) => tag.id === tagId);
+  /**
+   * Delete tag
+   */
+  deleteTag(id: string): Observable<boolean> {
+    const currentTags = this.tagsSubject.value;
+    const filteredTags = currentTags.filter((tag) => tag.id !== id);
 
-    if (tagIndex === -1) {
-      return of(false);
+    if (filteredTags.length === currentTags.length) {
+      return of(false); // Tag no encontrado
     }
 
-    const updatedTags = currentTags.filter((tag) => tag.id !== tagId);
-    this.tags$.next(updatedTags);
+    this.tagsSubject.next(filteredTags);
+    this.saveTagsToStorage();
 
     return of(true);
+  }
+
+  /**
+   * Clear all tags (util for testing)
+   */
+  clearAll(): void {
+    this.tagsSubject.next([]);
+    globalThis.localStorage.removeItem(this.TAGS_STORAGE_KEY);
+  }
+
+  // ============ PRIVATE METHODS ============
+
+  private loadTagsFromStorage(): Tag[] {
+    try {
+      const stored = globalThis.localStorage?.getItem(this.TAGS_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Error loading tags from storage:', error);
+      return [];
+    }
+  }
+
+  private saveTagsToStorage(): void {
+    try {
+      globalThis.localStorage.setItem(this.TAGS_STORAGE_KEY, JSON.stringify(this.tagsSubject.value));
+    } catch (error) {
+      console.error('Error saving tags to storage:', error);
+    }
+  }
+
+  initializeTagsSampleData(): void {
+    this.createTag({ name: 'Backend', color: 'green'});
+    this.createTag({ name: 'Frontend', color: 'red'});
+    this.createTag({ name: 'Design', color: 'blue'});
   }
 }

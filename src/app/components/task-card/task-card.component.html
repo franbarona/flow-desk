@@ -6,6 +6,7 @@
       <div
         class="absolute w-10 rounded-full border-2 border-white overflow-hidden"
         [style.left.px]="$index * 20"
+        title="{{assignedUser.name}} {{assignedUser.surnames}}"
       >
         @if (assignedUser?.avatarUrl) {
         <img src="{{ assignedUser.avatarUrl }}" alt="" />
@@ -22,7 +23,7 @@
     <!-- Priority Badge -->
     <div class="flex justify-between items-start">
       <span [class]="'text-xs font-semibold px-3 py-1 rounded-full ' + getPriorityColor()">
-        {{ task.priority }}
+        {{ task.priority | titlecase}}
       </span>
     </div>
   </div>

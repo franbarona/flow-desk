@@ -84,7 +84,7 @@ export class TagsView implements OnInit {
 
   onHandleUpdateTag(updatedTag: UpdateTagRequest) {
     const tagId = updatedTag.id;
-    const updatedTagData: Partial<Tag> = {
+    const updatedTagData: Partial<Omit<Tag, 'id'>> = {
       name: updatedTag.name,
       color: updatedTag.color,
     };

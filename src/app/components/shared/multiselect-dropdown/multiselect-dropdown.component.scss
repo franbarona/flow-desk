@@ -1,0 +1,13 @@
+/* Estilos adicionales si son necesarios */
+:host {
+  display: block;
+}
+
+/* Asegurar que los estilos de Tailwind se apliquen correctamente */
+input:focus {
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+}

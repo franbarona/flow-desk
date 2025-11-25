@@ -5,6 +5,7 @@ import {
   Column,
   CreateTaskRequest,
   Task,
+  PopulatedTask,
   UpdateTaskRequest,
 } from '../../models/task.interface';
 import { TaskCardComponent } from '../task-card/task-card.component';
@@ -27,11 +28,11 @@ import { TagService } from '../../services/tag.service';
 })
 export class TaskBoardComponent implements OnInit, OnDestroy {
   projectId!: string;
-  tasks: Task[] = [];
+  tasks: PopulatedTask[] = [];
   users: User[] = [];
   tags: Tag[] = [];
   columns: Column[] = MOCK_COLUMNS_DATA;
-  selectedTask: Task | null = null;
+  selectedTask: PopulatedTask | null = null;
 
   activeColumn: string | null = null;
   activeBurnBarrel: boolean = false;
@@ -80,16 +81,16 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
       .subscribe((tags) => (this.tags = tags));
 
     this.taskService
-      .getTasks(this.projectId)
+      .populatedTask$
       .pipe(takeUntil(this.destroy$))
       .subscribe((tasks) => (this.tasks = tasks));
   }
 
-  getFilteredTasks(column: string): Task[] {
+  getFilteredTasks(column: string): PopulatedTask[] {
     return this.tasks.filter((task) => task.status === column);
   }
 
-  onDragStart(event: DragEvent, task: Task): void {
+  onDragStart(event: DragEvent, task: PopulatedTask): void {
     if (event.dataTransfer) {
       event.dataTransfer.setData('text/plain', task.id);
       event.dataTransfer.effectAllowed = 'move';
@@ -280,7 +281,7 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     this.tasks = this.tasks.filter((task) => task.id !== taskId);
   }
 
-  trackByTaskId(index: number, task: Task): string {
+  trackByTaskId(index: number, task: PopulatedTask): string {
     return task.id;
   }
 
@@ -292,7 +293,7 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
   /**
    * Opens modal to edit a task when clicked
    */
-  openTaskModal(task: Task, event?: MouseEvent) {
+  openTaskModal(task: PopulatedTask, event?: MouseEvent) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -328,15 +329,15 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
 
   onTaskUpdated(updatedTask: UpdateTaskRequest) {
     const taskId = updatedTask.id;
-    const updatedTaskData: Partial<Task> = {
+    const updatedTaskData: Partial<Omit<Task, 'id'>> = {
       title: updatedTask.title,
       description: updatedTask.description,
       status: updatedTask.status,
       priority: updatedTask.priority,
       startDate: new Date(updatedTask.startDate),
       endDate: new Date(updatedTask.endDate),
-      tags: this.tags.filter((tag) => updatedTask.tagIds.includes(tag.id)),
-      assignedUsers: this.users.filter((user) => updatedTask.assignedUserIds.includes(user.id)),
+      tagIds: this.tags.filter((tag) => updatedTask.tagIds.includes(tag.id)).map(tag => tag.id),
+      assignedUserIds: this.users.filter((assignedUser) => updatedTask.assignedUserIds?.includes(assignedUser.id)).map(assignedUser => assignedUser.id),
     };
     this.taskService
       .updateTask(taskId, updatedTaskData)

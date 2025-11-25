@@ -11,6 +11,7 @@ import { TitleComponent } from './title/title.component';
 import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { DeleteConfirmationComponent } from './delete-confirmation/delete-confirmation.component';
+import { MultiselectDropdownComponent } from './multiselect-dropdown/multiselect-dropdown.component';
 // import { LoaderComponent } from './loader/loader.component'; TODO
 
 @NgModule({
@@ -24,7 +25,8 @@ import { DeleteConfirmationComponent } from './delete-confirmation/delete-confir
     TitleComponent,
     ContextMenuComponent,
     ColorPickerComponent,
-    DeleteConfirmationComponent
+    DeleteConfirmationComponent,
+    MultiselectDropdownComponent
     // LoaderComponent, //TODO
   ],
   exports: [
@@ -37,7 +39,8 @@ import { DeleteConfirmationComponent } from './delete-confirmation/delete-confir
     TitleComponent,
     ContextMenuComponent,
     ColorPickerComponent,
-    DeleteConfirmationComponent
+    DeleteConfirmationComponent,
+    MultiselectDropdownComponent
     // LoaderComponent, //TODO
   ]
 })

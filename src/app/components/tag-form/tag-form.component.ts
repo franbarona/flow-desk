@@ -28,7 +28,6 @@ export class TagFormComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.existingTag) {
-    console.log("existingTag", this.existingTag)
       this.isEditMode = true;
       this.populateFormWithTask(this.existingTag);
     } else {
