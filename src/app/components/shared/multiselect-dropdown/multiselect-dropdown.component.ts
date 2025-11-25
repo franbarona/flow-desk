@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, OnInit, ViewChild, ElementRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -23,7 +23,7 @@ export interface User {
     },
   ],
 })
-export class MultiselectDropdownComponent<T extends User> implements ControlValueAccessor, OnInit {
+export class MultiselectDropdownComponent<T extends User> implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input() items: T[] = [];
   @Input() placeholder = 'Seleccionar usuarios...';
   @Input() displayLabel = true;
@@ -35,6 +35,7 @@ export class MultiselectDropdownComponent<T extends User> implements ControlValu
   filteredItems: T[] = [];
   searchText = '';
   isOpen = false;
+  shouldFocusInput = false;
 
   // ControlValueAccessor
   private onChange: (value: T[]) => void = () => {};
@@ -44,6 +45,18 @@ export class MultiselectDropdownComponent<T extends User> implements ControlValu
 
   ngOnInit() {
     this.filteredItems = [...this.items];
+  }
+
+  ngAfterViewInit() {
+    if (this.shouldFocusInput) {
+      this.focusInput();
+    }
+  }
+
+  private focusInput() {
+    requestAnimationFrame(() => {
+      this.searchInput?.nativeElement?.focus();
+    });
   }
 
   onSearchChange(text: string) {
@@ -71,11 +84,8 @@ export class MultiselectDropdownComponent<T extends User> implements ControlValu
     this.onSearchChange('');
     this.updateValue();
     
-    // Marcar para detección de cambios y mantener focus
-    this.cdr.markForCheck();
-    setTimeout(() => {
-      this.searchInput?.nativeElement?.focus();
-    }, 0);
+    this.shouldFocusInput = true;
+    this.focusInput();
   }
 
   removeItem(item: T) {
