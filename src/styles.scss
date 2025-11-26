@@ -14,6 +14,10 @@
     @apply text-red-500;
   }
 
+  .text-red-light {
+    @apply text-red-400;
+  }
+
   .text-red-dark {
     @apply text-red-800;
   }
@@ -28,6 +32,10 @@
 
   .text-orange {
     @apply text-orange-500;
+  }
+
+  .text-orange-light {
+    @apply text-orange-400;
   }
 
   .text-orange-dark {
@@ -46,6 +54,10 @@
     @apply text-amber-500;
   }
 
+  .text-amber-light {
+    @apply text-amber-400;
+  }
+
   .text-amber-dark {
     @apply text-amber-800;
   }
@@ -60,6 +72,10 @@
 
   .text-yellow {
     @apply text-yellow-500;
+  }
+
+  .text-yellow-light {
+    @apply text-yellow-400;
   }
 
   .text-yellow-dark {
@@ -78,6 +94,10 @@
     @apply text-lime-500;
   }
 
+  .text-lime-light {
+    @apply text-lime-400;
+  }
+
   .text-lime-dark {
     @apply text-lime-800;
   }
@@ -92,6 +112,10 @@
 
   .text-green {
     @apply text-green-500;
+  }
+
+  .text-green-light {
+    @apply text-green-400;
   }
 
   .text-green-dark {
@@ -110,6 +134,10 @@
     @apply text-emerald-500;
   }
 
+  .text-emerald-light {
+    @apply text-emerald-400;
+  }
+
   .text-emerald-dark {
     @apply text-emerald-800;
   }
@@ -124,6 +152,10 @@
 
   .text-teal {
     @apply text-teal-500;
+  }
+
+  .text-teal-light {
+    @apply text-teal-400;
   }
 
   .text-teal-dark {
@@ -142,6 +174,10 @@
     @apply text-cyan-500;
   }
 
+  .text-cyan-light {
+    @apply text-cyan-400;
+  }
+
   .text-cyan-dark {
     @apply text-cyan-800;
   }
@@ -156,6 +192,10 @@
 
   .text-sky {
     @apply text-sky-500;
+  }
+
+  .text-sky-light {
+    @apply text-sky-400;
   }
 
   .text-sky-dark {
@@ -174,6 +214,10 @@
     @apply text-blue-500;
   }
 
+  .text-blue-light {
+    @apply text-blue-400;
+  }
+
   .text-blue-dark {
     @apply text-blue-800;
   }
@@ -188,6 +232,10 @@
 
   .text-indigo {
     @apply text-indigo-500;
+  }
+
+  .text-indigo-light {
+    @apply text-indigo-400;
   }
 
   .text-indigo-dark {
@@ -206,6 +254,10 @@
     @apply text-violet-500;
   }
 
+  .text-violet-light {
+    @apply text-violet-400;
+  }
+
   .text-violet-dark {
     @apply text-violet-800;
   }
@@ -220,6 +272,10 @@
 
   .text-purple {
     @apply text-purple-500;
+  }
+
+  .text-purple-light {
+    @apply text-purple-400;
   }
 
   .text-purple-dark {
@@ -238,6 +294,10 @@
     @apply text-fuchsia-500;
   }
 
+  .text-fuchsia-light {
+    @apply text-fuchsia-400;
+  }
+
   .text-fuchsia-dark {
     @apply text-fuchsia-800;
   }
@@ -252,6 +312,10 @@
 
   .text-pink {
     @apply text-pink-500;
+  }
+
+  .text-pink-light {
+    @apply text-pink-400;
   }
 
   .text-pink-dark {
@@ -270,6 +334,10 @@
     @apply text-rose-500;
   }
 
+  .text-rose-light {
+    @apply text-rose-400;
+  }
+
   .text-rose-dark {
     @apply text-rose-800;
   }
@@ -284,6 +352,10 @@
 
   .text-slate {
     @apply text-slate-500;
+  }
+
+  .text-slate-light {
+    @apply text-slate-400;
   }
 
   .text-slate-dark {
@@ -302,6 +374,10 @@
     @apply text-gray-500;
   }
 
+  .text-gray-light {
+    @apply text-gray-400;
+  }
+
   .text-gray-dark {
     @apply text-gray-800;
   }
@@ -316,6 +392,10 @@
 
   .text-zinc {
     @apply text-zinc-500;
+  }
+
+  .text-zinc-light {
+    @apply text-zinc-400;
   }
 
   .text-zinc-dark {
@@ -334,6 +414,10 @@
     @apply text-neutral-500;
   }
 
+  .text-neutral-light {
+    @apply text-neutral-400;
+  }
+
   .text-neutral-dark {
     @apply text-neutral-800;
   }
@@ -350,6 +434,10 @@
     @apply text-stone-500;
   }
 
+  .text-stone-light {
+    @apply text-stone-400;
+  }
+
   .text-stone-dark {
     @apply text-stone-800;
   }
@@ -363,6 +451,10 @@
   }
 
   .text-black {
+    @apply text-black;
+  }
+
+  .text-black-light {
     @apply text-black;
   }
 

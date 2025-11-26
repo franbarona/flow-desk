@@ -1,118 +1,138 @@
 <div class="relative w-full">
-  <!-- Botón/Contenedor principal -->
+  <!-- Main container -->
   <div
     (click)="toggleDropdown()"
-    class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-left text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-text"
+    class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-left text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-pointer"
   >
-    <!-- Contenedor flex para tags, input y chevron -->
+    <!-- Flex for tags, input & chevron -->
     <div class="flex items-center justify-between gap-2">
-      <!-- Tags e input de búsqueda -->
+      <!-- Tags & search input -->
       <div class="flex flex-wrap items-center gap-2 flex-1 min-h-[1.5rem]">
-        <!-- Si hay items seleccionados mostrar tags -->
-        <ng-container *ngIf="selectedItems.length > 0">
+        <!-- If items selected, show tags -->
+        @if (selectedItems.length > 0) {
+        <ng-container>
+          @for (item of selectedItems; track $index) {
           <div
-            *ngFor="let item of selectedItems"
-            class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs whitespace-nowrap"
+            class="inline-flex items-center gap-2 px-2 py-1 border border border-gray-300 bg-gray-light text-black rounded-lg text whitespace-nowrap"
           >
-            <img [src]="item.avatarUrl" [alt]="item.name" class="w-4 h-4 rounded-full object-cover" />
-            <span>{{ item.name }}</span>
+            @if (item.avatarUrl) {
+              @if (item.avatarUrl.trim() !== '') {
+              <img
+                [src]="item.avatarUrl"
+                [alt]="item.label"
+                class="w-5 h-5 rounded-full object-cover"
+              />
+              } @else {
+              <div
+                class="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[.6em] font-medium"
+              >
+                {{ item.label.charAt(0).toUpperCase()
+                }}{{ item.extraLabel?.charAt(0)?.toUpperCase() }}
+              </div>
+              }
+            }
+            @if (item.color) {
+              <div
+                class="w-5 h-5 rounded-full"
+                [class]="`bg-${item.color}`"
+              >
+                {{ item.label.charAt(0).toUpperCase()
+                }}{{ item.extraLabel?.charAt(0)?.toUpperCase() }}
+              </div>
+            }
+            <span>{{ item.label }}</span>
             <button
               type="button"
               (click)="removeItem(item); $event.stopPropagation()"
-              class="text-blue-600 hover:text-blue-800 transition-colors ml-1 flex-shrink-0"
+              class="text-gray-light hover:text-gray-700 transition-colors flex-shrink-0 cursor-pointer hover:scale-[1.1]"
             >
-              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <app-icon [icon]="'close'" class="cursor-pointer"></app-icon>
             </button>
           </div>
+          }
         </ng-container>
+        }
 
-        <!-- Input de búsqueda -->
+        <!-- Search input -->
         <input
           #searchInput
           type="text"
-          placeholder="Buscar usuarios..."
+          [placeholder]="isOpen ? 'Search users...' : selectedItems.length === 0 ? placeholder : ''"
           [(ngModel)]="searchText"
           (input)="onSearchChange(searchText)"
           (click)="!isOpen && toggleDropdown(); $event.stopPropagation()"
           [autofocus]="isOpen"
-          class="flex-1 min-w-[150px] px-0 py-0 border-0 outline-none text-gray-900 placeholder-gray-500 bg-transparent focus:ring-0"
+          class="flex-1 min-w-[150px] px-0 py-0 border-0 outline-none text-gray-900 placeholder-gray-500 bg-transparent focus:ring-0 cursor-pointer"
         />
-
-        <!-- Si no hay items ni input mostrar placeholder -->
-        <span *ngIf="selectedItems.length === 0 && searchText === ''" class="text-gray-500">
-          {{ placeholder }}
-        </span>
       </div>
 
       <!-- Chevron -->
-      <svg
-        class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0"
-        [class.rotate-180]="isOpen"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-      </svg>
+      <button type="button" class="cursor-pointer">
+        <app-icon
+          [icon]="'keyboard_arrow_down'"
+          [size]="22"
+          class="text-gray-light transition-all duration-200 ease-in-out flex"
+          [class.rotate-180]="isOpen"
+        />
+      </button>
     </div>
   </div>
 
   <!-- Dropdown menu -->
+  @if (isOpen) {
   <div
-    *ngIf="isOpen"
     class="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50"
   >
     <!-- Opciones -->
     <div class="max-h-64 overflow-y-auto">
-      <div
-        *ngIf="filteredItems.length === 0"
-        class="p-4 text-center text-gray-500"
-      >
-        No se encontraron usuarios
-      </div>
-
+      @if (filteredItems.length === 0) {
+      <div class="p-4 text-center text-gray-500">Users not found</div>
+      } @for (item of filteredItems; track $index) {
       <button
-        *ngFor="let item of filteredItems"
         type="button"
         (click)="toggleItem(item)"
-        class="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-0 flex items-center gap-3"
-        [class.bg-blue-50]="isSelected(item)"
+        class="w-full px-4 py-3 text-left transition-colors border-b border-gray-100 last:border-0 flex items-center gap-3 cursor-pointer"
+        [class]="isSelected(item) ? 'bg-lime-light' : ''"
       >
         <!-- Avatar -->
-        <img [src]="item.avatarUrl" [alt]="item.name" class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+        @if (item.avatarUrl && item.avatarUrl.trim() !== '') {
+        <img
+          [src]="item.avatarUrl"
+          [alt]="item.label"
+          class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+        />
+        } @else {
+        <div
+          class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-[1em] font-medium"
+        >
+          {{ item.label.charAt(0).toUpperCase() }}{{ item.extraLabel?.charAt(0)?.toUpperCase() }}
+        </div>
+        }
 
-        <!-- Nombre -->
-        <span class="flex-grow text-gray-900">{{ item.name }} {{ item.surnames }}</span>
+        <!-- Name -->
+        <span class="flex-grow text-gray-900">{{ item.label }} {{ item.extraLabel }}</span>
       </button>
+      }
     </div>
 
-    <!-- Footer con botón limpiar -->
-    <div
-      *ngIf="selectedItems.length > 0"
-      class="p-3 border-t border-gray-200 flex justify-between"
-    >
+    <!-- Footer with clear all button -->
+    @if (selectedItems.length > 0) {
+    <div class="p-3 border-t border-gray-200 flex justify-between">
       <button
         type="button"
         (click)="clearAll()"
         class="text-sm text-red-600 hover:text-red-800 font-medium transition-colors"
       >
-        Limpiar todo
+        Clear all
       </button>
-      <span class="text-sm text-gray-600">{{ selectedItems.length }} seleccionados</span>
+      <span class="text-sm text-gray-600">{{ selectedItems.length }} selected</span>
     </div>
+    }
   </div>
+  }
 
-  <!-- Overlay para cerrar dropdown -->
-  <div
-    *ngIf="isOpen"
-    (click)="isOpen = false"
-    class="fixed inset-0 z-40"
-  >
-  </div>
+  <!-- Overlay close dropdown -->
+  @if (isOpen) {
+  <div (click)="closeDropdown(); searchText = ''" class="fixed inset-0 z-40"></div>
+  }
 </div>

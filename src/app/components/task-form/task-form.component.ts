@@ -4,6 +4,7 @@ import {
   inject,
   Input,
   OnChanges,
+  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -14,7 +15,7 @@ import { CreateTaskRequest, PopulatedTask, UpdateTaskRequest } from '../../model
 import { SharedModule } from '../shared/shared.module';
 import { ButtonComponent } from '../shared/button/button.component';
 import { first, zip } from 'rxjs';
-import { DropdownOptions } from '../../models/utils.interface';
+import { DropdownOptions, MultiselectDropdown } from '../../models/utils.interface';
 import { ProjectService } from '../../services/project.service';
 import { UtilsService } from '../../services/utils.service';
 import { EnumPriorities, EnumStatus } from '../../constants/mocks';
@@ -25,7 +26,7 @@ import { EnumPriorities, EnumStatus } from '../../constants/mocks';
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.scss',
 })
-export class TaskFormComponent implements OnChanges {
+export class TaskFormComponent implements OnInit, OnChanges {
   @Input() projectId!: string;
   @Input() users: User[] = [];
   @Input() tags: Tag[] = [];
@@ -39,18 +40,29 @@ export class TaskFormComponent implements OnChanges {
   private readonly utilsService = inject(UtilsService);
 
   taskForm: FormGroup;
-  selectedUsers: Set<string> = new Set();
   selectedTags: Set<string> = new Set();
+  // selectedUsers: Set<string> = new Set();
   isUserDropdownOpen = false;
   isEditMode = false;
   projectOptions: DropdownOptions[] = [];
   priorityOptions: DropdownOptions[] = [];
   statusOptions: DropdownOptions[] = [];
 
-  assignedUsers: User[] = [];
+  assignableUsers: MultiselectDropdown[] = [];
 
   constructor() {
     this.taskForm = this.createForm();
+  }
+
+  ngOnInit() {
+    for (const user of this.users) {
+      this.assignableUsers.push({
+        id: user.id,
+        label: user.name,
+        extraLabel: user.surnames,
+        avatarUrl: user.avatarUrl,
+      });
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -110,6 +122,7 @@ export class TaskFormComponent implements OnChanges {
       description: task.description,
       startDate: startDate,
       endDate: endDate,
+      users: task.assignedUserIds
     });
 
     // Set selected tags
@@ -119,21 +132,30 @@ export class TaskFormComponent implements OnChanges {
     });
 
     // Set selected users
-    this.selectedUsers.clear();
-    task.assignedUsers.forEach((user) => {
-      this.selectedUsers.add(user.id);
-    });
+    // this.selectedUsers.clear();
+    // task.assignedUsers.forEach((user) => {
+    //   this.selectedUsers.add(user.id);
+    // });
+    // this.assignableUsers = [];
+    // for (const user of task.assignedUsers) {
+    //   this.assignableUsers.push({
+    //     id: user.id,
+    //     label: user.name,
+    //     extraLabel: user.surnames,
+    //     avatarUrl: user.avatarUrl
+    //   })
+    // }
   }
 
   private resetForm() {
     this.taskForm.reset();
-    this.selectedUsers.clear();
+    this.assignableUsers = [];
     this.selectedTags.clear();
     this.isUserDropdownOpen = false;
   }
 
   onSubmit() {
-    if (this.taskForm.valid && this.selectedUsers.size > 0) {
+    if (this.taskForm.valid && this.assignableUsers.length > 0) {
       const formValue = this.taskForm.value;
 
       if (this.isEditMode && this.existingTask) {
@@ -148,7 +170,7 @@ export class TaskFormComponent implements OnChanges {
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           tagIds: Array.from(this.selectedTags),
-          assignedUserIds: Array.from(this.selectedUsers),
+          assignedUserIds: formValue.users, //Array.from(this.selectedUsers),
         };
         this.taskUpdated.emit(taskRequest);
       } else {
@@ -162,7 +184,7 @@ export class TaskFormComponent implements OnChanges {
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           tagIds: Array.from(this.selectedTags),
-          assignedUserIds: Array.from(this.selectedUsers),
+          assignedUserIds: [], //Array.from(this.selectedUsers),
         };
         this.taskCreated.emit(taskRequest);
       }
@@ -177,14 +199,6 @@ export class TaskFormComponent implements OnChanges {
     this.modalClosed.emit();
   }
 
-  toggleUserSelection(userId: string) {
-    if (this.selectedUsers.has(userId)) {
-      this.selectedUsers.delete(userId);
-    } else {
-      this.selectedUsers.add(userId);
-    }
-  }
-
   toggleTagSelection(tagId: string) {
     if (this.selectedTags.has(tagId)) {
       this.selectedTags.delete(tagId);
@@ -193,26 +207,8 @@ export class TaskFormComponent implements OnChanges {
     }
   }
 
-  isUserSelected(userId: string): boolean {
-    return this.selectedUsers.has(userId);
-  }
-
   isTagSelected(tagId: string): boolean {
     return this.selectedTags.has(tagId);
-  }
-
-  getSelectedUsersText(): string {
-    if (this.selectedUsers.size === 0) {
-      return 'Select users';
-    }
-    const selectedUserNames = this.users
-      .filter((user) => this.selectedUsers.has(user.id))
-      .map((user) => user.name);
-
-    if (selectedUserNames.length <= 2) {
-      return selectedUserNames.join(', ');
-    }
-    return `${selectedUserNames[0]}, ${selectedUserNames[1]} +${selectedUserNames.length - 2} more`;
   }
 
   toggleUserDropdown() {
@@ -225,8 +221,8 @@ export class TaskFormComponent implements OnChanges {
     }
   }
 
-  onSelectionChange(users: User[]) {
-    this.assignedUsers = users;
+  onAssignedUsersChange(users: string[]) {
+    // this.assignedUsers = users;
   }
 
   // Validation helpers
@@ -289,6 +285,6 @@ export class TaskFormComponent implements OnChanges {
   }
 
   get isFormValid(): boolean {
-    return this.taskForm.valid && this.selectedUsers.size > 0;
+    return this.taskForm.valid /*&& this.selectedUsers.size > 0*/;
   }
 }

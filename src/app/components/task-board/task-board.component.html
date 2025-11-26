@@ -95,14 +95,16 @@
   </div>
 </div>
 
-<app-modal [isOpen]="isModalOpen" [title]="selectedTask ? 'Edit Task ' + selectedTask.id : 'New Task'" (closeModal)="closeModal()">
-  <app-task-form
-    [projectId]="projectId"
-    [users]="users"
-    [tags]="tags"
-    [existingTask]="selectedTask"
-    (taskCreated)="onTaskCreated($event)"
-    (taskUpdated)="onTaskUpdated($event)"
-    (modalClosed)="closeModal()"
-  ></app-task-form>
-</app-modal>
+@if(isModalOpen) {
+  <app-modal [isOpen]="isModalOpen" [title]="selectedTask ? 'Edit Task ' + selectedTask.id : 'New Task'" (closeModal)="closeModal()">
+    <app-task-form
+      [projectId]="projectId"
+      [users]="users"
+      [tags]="tags"
+      [existingTask]="selectedTask"
+      (taskCreated)="onTaskCreated($event)"
+      (taskUpdated)="onTaskUpdated($event)"
+      (modalClosed)="closeModal()"
+    ></app-task-form>
+  </app-modal>
+}
