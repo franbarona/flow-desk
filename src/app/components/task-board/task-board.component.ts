@@ -1,89 +1,39 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { User } from '../../models/user.interface';
 import { Tag } from '../../models/tag.interface';
-import {
-  Column,
-  CreateTaskRequest,
-  Task,
-  PopulatedTask,
-  UpdateTaskRequest,
-} from '../../models/task.interface';
+import { Column, PopulatedTask, UpdateTaskRequest, UpdateTaskStatusRequest } from '../../models/task.interface';
 import { TaskCardComponent } from '../task-card/task-card.component';
-import { MOCK_COLUMNS_DATA } from '../../constants/mocks';
-import { TaskService } from '../../services/task.service';
-import { Subject, takeUntil } from 'rxjs';
-import { ModalService } from '../../services/modal.service';
-import { TaskFormComponent } from '../task-form/task-form.component';
-import { ActivatedRoute } from '@angular/router';
-import { ProjectService } from '../../services/project.service';
+import { Subject } from 'rxjs';
 import { SharedModule } from '../shared/shared.module';
-import { UserService } from '../../services/user.service';
-import { TagService } from '../../services/tag.service';
+import { EnumStatus, TASK_BOARD_COLUMNS_DATA } from '../../constants/constants';
 
 @Component({
   selector: 'app-task-board',
   templateUrl: './task-board.component.html',
   styleUrls: ['./task-board.component.scss'],
-  imports: [SharedModule, TaskCardComponent, TaskFormComponent],
+  imports: [SharedModule, TaskCardComponent],
 })
-export class TaskBoardComponent implements OnInit, OnDestroy {
-  projectId!: string;
-  tasks: PopulatedTask[] = [];
-  users: User[] = [];
-  tags: Tag[] = [];
-  columns: Column[] = MOCK_COLUMNS_DATA;
-  selectedTask: PopulatedTask | null = null;
+export class TaskBoardComponent implements OnDestroy {
+  private readonly destroy$ = new Subject<void>();
 
+  @Input() projectId!: string;
+  @Input() tasks: PopulatedTask[] = [];
+  @Input() users: User[] = [];
+  @Input() tags: Tag[] = [];
+  columns: Column[] = TASK_BOARD_COLUMNS_DATA;
   activeColumn: string | null = null;
-  activeBurnBarrel: boolean = false;
+  activeDeleteForever: boolean = false;
   dragOverIndicator: string | null = null;
   taskPositions: Map<string, DOMRect> = new Map();
   isAnimating: boolean = false;
 
-  private readonly route = inject(ActivatedRoute);
-  private readonly userService = inject(UserService);
-  private readonly tagService = inject(TagService);
-  private readonly taskService = inject(TaskService);
-  private readonly modalService = inject(ModalService);
-  private readonly projectService = inject(ProjectService);
-  private readonly destroy$ = new Subject<void>();
-
-  get isModalOpen() {
-    return this.modalService.isModalOpen;
-  }
-
-  ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      const projectSlug = params['id'];
-      this.projectService.getProjectsBySlug(projectSlug).subscribe((project) => {
-        if (project) {
-          this.projectId = project.id;
-          this.loadTaskBoardData();
-        }
-      });
-    });
-  }
+  @Output() editTask = new EventEmitter<PopulatedTask>();
+  @Output() updateTaskStatus = new EventEmitter<UpdateTaskStatusRequest>();
+  @Output() deleteTask = new EventEmitter<PopulatedTask>();
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  loadTaskBoardData(): void {
-    this.userService
-      .getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((users) => (this.users = users));
-
-    this.tagService
-      .getTags()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((tags) => (this.tags = tags));
-
-    this.taskService
-      .populatedTask$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((tasks) => (this.tasks = tasks));
   }
 
   getFilteredTasks(column: string): PopulatedTask[] {
@@ -103,7 +53,7 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
       this.activeColumn = column;
       this.highlightIndicator(event, column);
     } else {
-      this.activeBurnBarrel = true;
+      this.activeDeleteForever = true;
     }
   }
 
@@ -118,24 +68,27 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
         this.clearHighlights();
       }
     } else {
-      this.activeBurnBarrel = false;
+      this.activeDeleteForever = false;
     }
   }
 
-  onDrop(event: DragEvent, targetColumn?: string): void {
+  onDrop(event: DragEvent, targetColumn?: EnumStatus): void {
     event.preventDefault();
     const taskId = event.dataTransfer?.getData('text/plain');
 
     if (!taskId) return;
+    const selectedTask = this.tasks.find((task) => task.id === taskId);
+    if (!selectedTask) return;
 
     if (targetColumn) {
       // Handle drop within column or between columns
       this.handleTaskDrop(taskId, targetColumn, event);
+      this.updateTaskStatus.emit({id: taskId, status: targetColumn});
       this.activeColumn = null;
     } else {
       // Delete task (burn barrel)
-      this.deleteTask(taskId);
-      this.activeBurnBarrel = false;
+      this.deleteTask.emit(selectedTask);
+      this.activeDeleteForever = false;
     }
 
     this.clearHighlights();
@@ -277,17 +230,8 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
     return Array.from(document.querySelectorAll(`[data-column="${column}"]`)) as HTMLElement[];
   }
 
-  private deleteTask(taskId: string): void {
-    this.tasks = this.tasks.filter((task) => task.id !== taskId);
-  }
-
   trackByTaskId(index: number, task: PopulatedTask): string {
     return task.id;
-  }
-
-  closeModal() {
-    this.selectedTask = null;
-    this.modalService.closeModal();
   }
 
   /**
@@ -298,67 +242,6 @@ export class TaskBoardComponent implements OnInit, OnDestroy {
       event.preventDefault();
       event.stopPropagation();
     }
-
-    this.selectedTask = { ...task }; // Create a copy for editing
-
-    // Also update the modal service if other components need to know
-    this.modalService.openModal({
-      users: this.users,
-      tags: this.tags,
-    });
-  }
-
-  /**
-   * Handles creation of new tasks
-   */
-  onTaskCreated(taskRequest: CreateTaskRequest) {
-    this.taskService
-      .createTask(taskRequest)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (newTask) => {
-          console.log('Task created successfully:', newTask);
-          // You can add a success notification here
-        },
-        error: (error) => {
-          console.error('Error creating task:', error);
-          // You can add error handling/notification here
-        },
-      });
-  }
-
-  onTaskUpdated(updatedTask: UpdateTaskRequest) {
-    const taskId = updatedTask.id;
-    const updatedTaskData: Partial<Omit<Task, 'id'>> = {
-      title: updatedTask.title,
-      description: updatedTask.description,
-      status: updatedTask.status,
-      priority: updatedTask.priority,
-      startDate: new Date(updatedTask.startDate),
-      endDate: new Date(updatedTask.endDate),
-      tagIds: this.tags.filter((tag) => updatedTask.tagIds.includes(tag.id)).map(tag => tag.id),
-      assignedUserIds: this.users.filter((assignedUser) => updatedTask.assignedUserIds?.includes(assignedUser.id)).map(assignedUser => assignedUser.id),
-    };
-    this.taskService
-      .updateTask(taskId, updatedTaskData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (newTask) => {
-          console.log('Task updated successfully:', newTask);
-          // You can add a success notification here
-        },
-        error: (error) => {
-          console.error('Error creating task:', error);
-          // You can add error handling/notification here
-        },
-      });
-  }
-
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
+    this.editTask.emit({ ...task });
   }
 }

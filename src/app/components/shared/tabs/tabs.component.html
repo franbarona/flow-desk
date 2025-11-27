@@ -1,0 +1,22 @@
+<div class="w-full">
+  <div class="flex border-b border-gray-200 sticky top-19 z-5 bg-main" role="tablist">
+    @for (tab of tabs; track tab.id) {
+    <button
+      type="button"
+      role="tab"
+      (click)="selectTab(tab.id)"
+      class="pt-4 px-8 pb-2 transition-all duration-200 ease-in-out text-gray-dark text-lg -mb-[2px] cursor-pointer"
+      [class]="
+        tab.id === activeTabId() ? 'border-b-3 border-lime-300 font-bold' : 'hover:font-medium'
+      "
+    >
+      @if(tab.icon) {
+      <app-icon [icon]="tab.icon" class="mr-2" [size]="22"></app-icon>
+      }
+      {{ tab.label }}
+    </button>
+    }
+  </div>
+
+  <ng-content></ng-content>
+</div>

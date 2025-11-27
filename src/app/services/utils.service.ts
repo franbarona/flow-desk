@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { customAlphabet } from 'nanoid';
 import { Observable, of } from 'rxjs';
 import { DropdownOptions } from '../models/utils.interface';
-import { EnumPriorities, EnumStatus } from '../constants/mocks';
+import { EnumPriorities, EnumStatus } from '../constants/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -36,12 +36,30 @@ export class UtilsService {
    */
   getStatusOptions(): Observable<DropdownOptions[]> {
     const options: DropdownOptions[] = [];
-    for (const status of Object.values(EnumStatus)) {
+    for (const statusKey of Object.keys(EnumStatus)) {
       options.push({
-        id: status,
-        name: status,
+        id: statusKey.toLowerCase(),
+        name: EnumStatus[statusKey as keyof typeof EnumStatus],
       });
     }
     return of(options);
+  }
+
+  templateToRegex(template: string): RegExp {
+    const regex = template.replace(/\//g, '\\/').replace(/\{\w+\}/g, '[^\\/]+');
+    return new RegExp(`^${regex}$`);
+  }
+
+  generateRandomDates(): { pastDate: Date; futureDate: Date } {
+    const now = new Date();
+    const oneMonthInMs = 30 * 24 * 60 * 60 * 1000;
+
+    // Random date between 1 month ago and now
+    const pastDate = new Date(now.getTime() - Math.random() * oneMonthInMs);
+
+    // Random date between now and 1 month in future
+    const futureDate = new Date(now.getTime() + Math.random() * oneMonthInMs);
+
+    return { pastDate, futureDate };
   }
 }

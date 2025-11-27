@@ -6,10 +6,13 @@ import {
   forwardRef,
   OnInit,
   OnChanges,
+  OnDestroy,
   ViewChild,
   ElementRef,
   AfterViewInit,
   SimpleChanges,
+  HostListener,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -31,7 +34,7 @@ import { MultiselectDropdown } from '../../../models/utils.interface';
   ],
 })
 export class MultiselectDropdownComponent<T extends MultiselectDropdown>
-  implements ControlValueAccessor, OnInit, OnChanges, AfterViewInit
+  implements ControlValueAccessor, OnInit, OnChanges, AfterViewInit, OnDestroy
 {
   @Input() items: T[] = [];
   @Input() placeholder = 'Select...';
@@ -40,28 +43,40 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
+  private readonly elementRef = inject(ElementRef);
+
   selectedItems: T[] = [];
   filteredItems: T[] = [];
   searchText = '';
   isOpen = false;
   shouldFocusInput = false;
 
-  // Almacena los IDs pendientes cuando writeValue se llama antes de que items esté disponible
   private pendingIds: string[] | null = null;
+  private escapeListener: ((event: KeyboardEvent) => void) | null = null;
 
   // ControlValueAccessor
   private onChange: (value: string[]) => void = () => {};
   private onTouched: () => void = () => {};
 
+  /**
+   * Detecta clicks fuera del componente para cerrar el dropdown
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.isOpen && !this.elementRef.nativeElement.contains(event.target)) {
+      this.closeDropdown();
+    }
+  }
+
   ngOnInit() {
     this.filteredItems = [...this.items];
     this.processPendingIds();
+    this.setupEscapeListener();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['items'] && this.items.length > 0) {
       this.filteredItems = [...this.items];
-      // Cuando los items cambian, intentamos procesar los IDs pendientes
       this.processPendingIds();
     }
   }
@@ -72,9 +87,28 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
     }
   }
 
-  /**
-   * Procesa los IDs pendientes una vez que los items están disponibles
-   */
+  ngOnDestroy() {
+    this.removeEscapeListener();
+  }
+
+  private setupEscapeListener(): void {
+    this.escapeListener = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && this.isOpen) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.closeDropdown();
+      }
+    };
+    document.addEventListener('keydown', this.escapeListener, true); // true = capture phase
+  }
+
+  private removeEscapeListener(): void {
+    if (this.escapeListener) {
+      document.removeEventListener('keydown', this.escapeListener, true);
+      this.escapeListener = null;
+    }
+  }
+
   private processPendingIds(): void {
     if (this.pendingIds && this.items.length > 0) {
       this.selectedItems = this.mapIdsToItems(this.pendingIds);
@@ -82,9 +116,6 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
     }
   }
 
-  /**
-   * Convierte un array de IDs en sus correspondientes objetos T
-   */
   private mapIdsToItems(ids: string[]): T[] {
     if (!ids || ids.length === 0) {
       return [];
@@ -92,9 +123,6 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
     return this.items.filter((item) => ids.includes(item.id));
   }
 
-  /**
-   * Extrae los IDs de los items seleccionados
-   */
   private getSelectedIds(): string[] {
     return this.selectedItems.map((item) => item.id);
   }
@@ -152,11 +180,6 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
     this.selectionChange.emit(selectedIds);
   }
 
-  // ControlValueAccessor implementation
-
-  /**
-   * Recibe un array de IDs (string[]) y los mapea a los objetos correspondientes
-   */
   writeValue(value: string[] | null): void {
     if (!value) {
       this.selectedItems = [];
@@ -164,11 +187,9 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
       return;
     }
 
-    // Si los items ya están cargados, mapeamos directamente
     if (this.items.length > 0) {
       this.selectedItems = this.mapIdsToItems(value);
     } else {
-      // Si los items aún no están disponibles, guardamos los IDs para procesarlos después
       this.pendingIds = value;
     }
   }
@@ -182,11 +203,13 @@ export class MultiselectDropdownComponent<T extends MultiselectDropdown>
   }
 
   setDisabledState(isDisabled: boolean): void {
-    // To do
+    // To do if is needed
   }
 
   closeDropdown(): void {
     this.isOpen = false;
+    this.searchText = '';
     this.filteredItems = [...this.items];
+    this.searchInput?.nativeElement?.blur();
   }
 }

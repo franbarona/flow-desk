@@ -1,9 +1,9 @@
-import { EnumPriorities } from "../constants/mocks";
+import { EnumPriorities, EnumStatus } from "../constants/constants";
 import { Tag } from "./tag.interface";
 import { User } from "./user.interface";
 
 export interface Column {
-  id: string;
+  id: EnumStatus;
   title: string;
 }
 export interface Task {
@@ -37,9 +37,14 @@ export interface TaskRequest {
   description: string;
   startDate: string;
   endDate: string;
-  status: 'backlog' | 'todo' | 'doing' | 'done';
+  status: EnumStatus;
   tagIds: string[];
   assignedUserIds: string[];
+}
+
+export interface UpdateTaskStatusRequest {
+  id: string,
+  status: EnumStatus
 }
 
 export interface CreateTaskRequest extends TaskRequest {}

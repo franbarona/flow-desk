@@ -20,10 +20,10 @@
 
 <app-modal
   [isOpen]="isModalOpen"
-  [title]="selectedTag && modalAction === 'upsert' ? 'Edit Tag ' : !selectedTag && modalAction === 'upsert' ? 'New Tag' : 'Delete tag'"
+  [title]="modalTile"
   (closeModal)="closeModal()"
 >
-  @if (modalAction === 'upsert') {
+  @if (!modalAction || modalAction === 'update') {
   <app-tag-form
     [existingTag]="selectedTag"
     (tagCreated)="onHandleCreatTag($event)"

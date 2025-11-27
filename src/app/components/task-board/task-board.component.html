@@ -1,7 +1,7 @@
 <!-- Main container -->
-<div class="h-screen w-full text-neutral-50">
+<div class="h-full w-full text-neutral-50">
   <!-- Board -->
-  <div class="h-full w-full flex justify-center gap-10 overflow-auto p-12">
+  <div class="h-full w-full flex justify-center gap-10 overflow-auto px-12 pb-12">
     <!-- Columns -->
     @for (column of columns; track $index) {
     <div class="flex-1 shrink-0">
@@ -66,45 +66,27 @@
     }
 
     <!-- Delete -->
-    <div
-      class="absolute bottom-5 right-5 grid h-20 w-20 shrink-0 place-content-center rounded border text-3xl transition-colors"
-      [ngClass]="{
-        'border-red-800 bg-red-800/20 text-red-500': activeBurnBarrel,
-        'border-neutral-500 bg-neutral-500/20 text-neutral-500': !activeBurnBarrel
-      }"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave()"
-      (drop)="onDrop($event)"
-    >
-      <!-- Fire icon when active, trash when inactive -->
-      <ng-container *ngIf="activeBurnBarrel; else trashIcon">
-        <!-- Fire icon - you'll need to add an icon library or use SVG -->
-        <svg class="animate-bounce w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </ng-container>
-      <ng-template #trashIcon>
-        <!-- Trash icon -->
-        <app-icon [icon]="'delete'" [size]="30"></app-icon>
-      </ng-template>
+
+    <div class="fixed bottom-5 right-5 bg-white h-20 w-20 group">
+      <div class="absolute z-10 h-full w-full shrink-0 grid place-content-center">
+        @if (activeDeleteForever) {
+          <app-icon [icon]="'delete_forever'" [size]="30" class="animate-ping text-red" ></app-icon>
+        }
+      </div>
+      <div
+        class="absolute z-20 grid h-full w-full shrink-0 place-content-center rounded border text-3xl transition-colors select-none"
+        [ngClass]="{
+          'border-red-800 bg-red-800/20 text-red-500': activeDeleteForever,
+          'border-neutral-500 bg-neutral-500/20 text-neutral-500': !activeDeleteForever
+        }"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
+        @if (!activeDeleteForever) {
+          <app-icon [icon]="'delete'" [size]="30"></app-icon>
+        }
+      </div>
     </div>
   </div>
 </div>
-
-@if(isModalOpen) {
-  <app-modal [isOpen]="isModalOpen" [title]="selectedTask ? 'Edit Task ' + selectedTask.id : 'New Task'" (closeModal)="closeModal()">
-    <app-task-form
-      [projectId]="projectId"
-      [users]="users"
-      [tags]="tags"
-      [existingTask]="selectedTask"
-      (taskCreated)="onTaskCreated($event)"
-      (taskUpdated)="onTaskUpdated($event)"
-      (modalClosed)="closeModal()"
-    ></app-task-form>
-  </app-modal>
-}

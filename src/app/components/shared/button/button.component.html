@@ -1,3 +1,6 @@
 <button [type]="type" [class]="getButtonClasses()" (click)="handleClick()" [disabled]="disabled">
+  @if(icon) {
+    <app-icon [icon]="icon" class="mr-2"></app-icon>
+  }
   {{ label }}
 </button>

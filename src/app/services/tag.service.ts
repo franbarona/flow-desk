@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { CreateTagRequest, Tag } from '../models/tag.interface';
 import { UtilsService } from './utils.service';
+import { MOCK_TAGS_DATA } from '../constants/mocks';
 
 @Injectable({
   providedIn: 'root',
@@ -124,8 +125,8 @@ export class TagService {
   }
 
   initializeTagsSampleData(): void {
-    this.createTag({ name: 'Backend', color: 'green'});
-    this.createTag({ name: 'Frontend', color: 'red'});
-    this.createTag({ name: 'Design', color: 'blue'});
+    for (const tag of MOCK_TAGS_DATA) {
+      this.createTag(tag);
+    }
   }
 }

@@ -1,0 +1,56 @@
+<app-title [title]="projectName"></app-title>
+<app-tabs [activeTab]="'task-board'">
+  <div class="w-[90%] mx-auto flex justify-end my-4">
+    <app-button
+      label="Add new task"
+      type="button"
+      [style]="'main'"
+      icon="add"
+      (action)="addNewTask()"
+    ></app-button>
+  </div>
+  <app-tab-panel id="backlog" label="Backlog" [icon]="'list_alt'">
+    <div class="w-[90%] mx-auto">
+      <app-tasks-backlog-table
+        [backlogTasks]="backlogTasks"
+        (editTask)="openTaskModal($event)"
+        (deleteTask)="deleteConfirmationModal($event)"
+      />
+    </div>
+  </app-tab-panel>
+  <app-tab-panel id="task-board" label="Kanban Workflow" [icon]="'view_kanban'">
+    @if (project) {
+    <app-task-board
+      [projectId]="project.id"
+      [tasks]="tasks"
+      [users]="users"
+      [tags]="tags"
+      (editTask)="openTaskModal($event)"
+      (updateTaskStatus)="handleUpdateTaskStatus($event)"
+      (deleteTask)="deleteConfirmationModal($event)"
+    />
+    }
+  </app-tab-panel>
+</app-tabs>
+
+@if(isModalOpen && project) {
+<app-modal [isOpen]="isModalOpen" [title]="modalTitle" (closeModal)="closeModal()">
+  @if (!modalAction || modalAction === 'update') {
+  <app-task-form
+    [projectId]="project.id"
+    [users]="users"
+    [tags]="tags"
+    [existingTask]="selectedTask"
+    (taskCreated)="onTaskCreated($event)"
+    (taskUpdated)="onTaskUpdated($event)"
+    (modalClosed)="closeModal()"
+  ></app-task-form>
+  } @if (modalAction === 'delete') {
+  <app-delete-confirmation
+    [title]="`Are you sure you want to delete the task '${selectedTask?.title}' ?`"
+    (confirmed)="handleDeleteTask()"
+    (cancelled)="closeModal()"
+  />
+  }
+</app-modal>
+}

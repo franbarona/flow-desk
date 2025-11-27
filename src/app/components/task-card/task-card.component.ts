@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { PopulatedTask } from '../../models/task.interface';
 import { CommonModule } from '@angular/common';
-import { EnumPriorities } from '../../constants/mocks';
+import { PopulatedTask } from '../../models/task.interface';
+import { EnumPriorities } from '../../constants/constants';
 import { IconComponent } from '../shared/icon/icon.component';
 
 @Component({

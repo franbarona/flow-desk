@@ -22,10 +22,16 @@ export class TagsView implements OnInit {
   private readonly destroy$ = new Subject<void>();
   tags: Tag[] = [];
   selectedTag: Tag | null = null;
-  modalAction: 'upsert' | 'delete' | null = null;
+  modalAction: 'update' | 'delete' | null = null;
 
   get isModalOpen() {
     return this.modalService.isModalOpen;
+  }
+
+  get modalTile() {
+    if (!this.modalAction) return 'Create tag';
+    else if (this.modalAction === 'update') return 'Edit tag';
+    else return 'Delete tag';
   }
 
   ngOnInit(): void {
@@ -37,7 +43,6 @@ export class TagsView implements OnInit {
   }
 
   addNewTag() {
-    this.modalAction = 'upsert';
     this.modalService.openModal();
   }
 
@@ -48,7 +53,7 @@ export class TagsView implements OnInit {
     }
 
     this.selectedTag = { ...tag };
-    this.modalAction = 'upsert';
+    this.modalAction = 'update';
     this.modalService.openModal();
   }
 

@@ -17,24 +17,25 @@
   </app-users-table>
 </div>
 
+@if (isModalOpen) {
 <app-modal
   [isOpen]="isModalOpen"
-  [title]="selectedUser && modalAction === 'upsert' ? 'Edit User ' : !selectedUser && modalAction === 'upsert' ? 'New User' : 'Delete User'"
+  [title]="modalTile"
   (closeModal)="closeModal()"
 >
-  @if (modalAction === 'upsert') {
+  @if (!modalAction || modalAction === 'update') {
   <app-user-form
     [existingUser]="selectedUser"
     (userCreated)="onHandleCreatUser($event)"
     (userUpdated)="onHandleUpdateUser($event)"
     (modalClosed)="closeModal()"
   ></app-user-form>
-  } 
-  @if (modalAction === 'delete') {
-    <app-delete-confirmation
+  } @if (modalAction === 'delete') {
+  <app-delete-confirmation
     [title]="`Are you sure you want to delete the user '${selectedUser?.name} ${selectedUser?.surnames}' ?`"
     (confirmed)="handleDeleteUser()"
     (cancelled)="closeModal()"
-    />
+  />
   }
 </app-modal>
+}

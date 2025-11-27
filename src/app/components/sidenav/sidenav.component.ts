@@ -6,7 +6,9 @@ import { WindowSizeService } from '../../services/window-size.service';
 import { ContextMenuAction } from '../shared/context-menu/context-menu.component';
 import { SharedModule } from '../shared/shared.module';
 import { ProjectService } from '../../services/project.service';
-import { Subscription } from 'rxjs';
+import { combineLatest, filter, map, startWith, Subscription } from 'rxjs';
+import { UtilsService } from '../../services/utils.service';
+import { ROUTE_MAP } from '../../constants/constants';
 
 interface MenuItem {
   label: string;
@@ -29,6 +31,7 @@ export class SidenavComponent implements OnInit {
   private readonly sidebarService = inject(SidebarService);
   private readonly modalService = inject(ModalService);
   private readonly projectService = inject(ProjectService);
+  private readonly utilsService = inject(UtilsService);
   private readonly subscription = new Subscription();
 
   currentRoute: string = '';
@@ -42,6 +45,19 @@ export class SidenavComponent implements OnInit {
 
   get isDesktopSize() {
     return this.windowSizeService.isLargeScreen();
+  }
+
+  get actionLabel(): string {
+    const url = this.currentRoute;
+
+    for (const route of ROUTE_MAP) {
+      const regex = this.utilsService.templateToRegex(route.template);
+      if (regex.test(url)) {
+        return route.label;
+      }
+    }
+
+    return '';
   }
 
   projectsSubItems: MenuItem[] = [];
@@ -79,23 +95,28 @@ export class SidenavComponent implements OnInit {
   openSubmenus: boolean[] = [];
 
   ngOnInit(): void {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.currentRoute = event.url;
-      }
-    });
-     this.subscription.add(
-      this.projectService.projects$.subscribe(projects => {
-        this.projectsSubItems = projects.map(project => ({
+    const route$ = this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.url),
+      startWith(this.router.url)
+    );
+
+    this.subscription.add(
+      combineLatest([route$, this.projectService.projects$]).subscribe(([url, projects]) => {
+
+        this.currentRoute = url;
+
+        this.projectsSubItems = projects.map((project) => ({
           label: project.name,
           route: project.slug,
-          icon: 'nearby',
+          icon: 'highlighter_size_5',
           iconColor: project.color,
         }));
-        
+
         this.updateProjectSubItems();
       })
     );
+
     this.openSubmenus = new Array(this.menuItems.length).fill(true);
   }
 
@@ -110,7 +131,7 @@ export class SidenavComponent implements OnInit {
     this.router.navigate([route]);
   }
 
-  addNewTask() {
+  newItemAction() {
     this.modalService.openModal();
   }
 
@@ -180,11 +201,11 @@ export class SidenavComponent implements OnInit {
   }
 
   private updateProjectSubItems(): void {
-    const projectsMenuIndex = this.menuItems.findIndex(item => item.label === 'Projects');
+    const projectsMenuIndex = this.menuItems.findIndex((item) => item.label === 'Projects');
     if (projectsMenuIndex !== -1) {
       this.menuItems[projectsMenuIndex] = {
         ...this.menuItems[projectsMenuIndex],
-        subItems: this.projectsSubItems
+        subItems: this.projectsSubItems,
       };
     }
   }

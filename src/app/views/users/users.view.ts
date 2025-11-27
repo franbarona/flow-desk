@@ -19,10 +19,16 @@ export class UsersView implements OnInit {
   private readonly destroy$ = new Subject<void>();
   users: User[] = [];
   selectedUser: User | null = null;
-  modalAction: 'upsert' | 'delete' | null = null;
+  modalAction: null | 'update' | 'delete' = null;
 
   get isModalOpen() {
     return this.modalService.isModalOpen;
+  }
+
+  get modalTile() {
+    if (!this.modalAction) return 'Create user';
+    else if (this.modalAction === 'update') return 'Edit user';
+    else return 'Delete user';
   }
 
   ngOnInit(): void {
@@ -34,7 +40,7 @@ export class UsersView implements OnInit {
   }
 
   addNewUser() {
-    this.modalAction = 'upsert';
+    console.log(this.modalAction);
     this.modalService.openModal();
   }
 
@@ -45,7 +51,7 @@ export class UsersView implements OnInit {
     }
 
     this.selectedUser = { ...user };
-    this.modalAction = 'upsert';
+    this.modalAction = 'update';
     this.modalService.openModal();
   }
 

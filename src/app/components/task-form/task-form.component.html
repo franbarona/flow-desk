@@ -177,6 +177,7 @@
     </div>
   </div>
 
+  <!-- Custom Multiselect dropdown users -->
   <div class="space-y-2">
     <label for="users" class="block text-sm font-medium text-gray-700">
       Assigned users @if (taskForm.get('users')?.validator) {
@@ -187,38 +188,21 @@
       formControlName="users"
       [items]="assignableUsers"
       placeholder="Select users..."
-      (selectionChange)="onAssignedUsersChange($event)"
     />
   </div>
 
-  <!-- Tags Multi-checkbox -->
+  <!-- Custom Multiselect dropdown users -->
   <div class="space-y-2">
-    <label class="block text-sm font-medium text-gray-700">Tags</label>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-10">
-      @for (tag of tags; track $index) {
-      <div
-        class="flex items-center space-x-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
-        (click)="toggleTagSelection(tag.id)"
-      >
-        <input
-          type="checkbox"
-          [checked]="isTagSelected(tag.id)"
-          (click)="$event.stopPropagation()"
-          (change)="toggleTagSelection(tag.id)"
-          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-        />
-
-        <span
-          class="inline-flex items-center text-xs font-semibold px-2 py-1 rounded-2xl cursor-pointer select-none w-full justify-center"
-          [style.backgroundColor]="tag.color + '20'"
-          [style.color]="tag.color"
-          [ngClass]="isTagSelected(tag.id) ? 'opacity-100' : 'opacity-40'"
-        >
-          {{ tag.name }}
-        </span>
-      </div>
+    <label for="tags" class="block text-sm font-medium text-gray-700">
+      Tags @if (taskForm.get('tags')?.validator) {
+      <span class="text-red-500">*</span>
       }
-    </div>
+    </label>
+    <app-multiselect-dropdown
+      formControlName="tags"
+      [items]="assignableTags"
+      placeholder="Select tags..."
+    />
   </div>
 
   <!-- Action Buttons -->

@@ -1,6 +1,15 @@
 @use "tailwindcss";
 
-/* Definir utilidades personalizadas */
+
+:root {
+  font-family: "Inter", sans-serif;
+}
+
+.bg-main {
+  background-color: #F9FAF5;
+}
+
+/* Custom utilities */
 @layer utilities {
   .bg-red-light {
     @apply bg-red-100;

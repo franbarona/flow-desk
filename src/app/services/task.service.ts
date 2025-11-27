@@ -1,13 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
-import { TagService } from './tag.service';
 import { CreateTaskRequest, Task, PopulatedTask } from '../models/task.interface';
 import { Tag } from '../models/tag.interface';
+import { User } from '../models/user.interface';
+import { MOCK_TASKS_DATA } from '../constants/mocks';
+import { EnumPriorities, EnumStatus } from '../constants/constants';
+import { TagService } from './tag.service';
 import { UtilsService } from './utils.service';
-import { EnumPriorities, EnumStatus } from '../constants/mocks';
 import { ProjectService } from './project.service';
 import { UserService } from './user.service';
-import { User } from '../models/user.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +42,15 @@ export class TaskService {
   }
 
   /**
+   * Get populated tasks by projectId
+   */
+  getTasksByProjectId(projectId: string): Observable<PopulatedTask[]> {
+    return this.populatedTask$.pipe(
+      map((tasks) => tasks.filter((task) => task.projectId === projectId))
+    );
+  }
+
+  /**
    * Create task
    */
   createTask(createTaskRequest: CreateTaskRequest): Observable<Task> {
@@ -60,7 +70,7 @@ export class TaskService {
     const currentTasks = this.tasksSubject.value;
     this.tasksSubject.next([...currentTasks, newTask]);
     this.saveTasksToStorage();
-    return of(newTask)
+    return of(newTask);
   }
 
   /**
@@ -92,20 +102,48 @@ export class TaskService {
   }
 
   /**
+   * Update task
+   */
+  updateTaskStatus(id: string, status: EnumStatus): Observable<Task | undefined> {
+    const currentTasks = this.tasksSubject.value;
+    const taskIndex = currentTasks.findIndex((task) => task.id === id);
+
+    if (taskIndex === -1) {
+      return of(undefined);
+    }
+
+    const updatedTask: Task = {
+      ...currentTasks[taskIndex],
+      status: status,
+    };
+
+    const newTasks = [
+      ...currentTasks.slice(0, taskIndex),
+      updatedTask,
+      ...currentTasks.slice(taskIndex + 1),
+    ];
+
+    this.tasksSubject.next(newTasks);
+    this.saveTasksToStorage();
+
+    return of(updatedTask);
+  }
+
+  /**
    * Delete task
    */
-  deleteTask(id: string): boolean {
+  deleteTask(id: string): Observable<boolean> {
     const currentTasks = this.tasksSubject.value;
     const filteredTasks = currentTasks.filter((task) => task.id !== id);
 
     if (filteredTasks.length === currentTasks.length) {
-      return false; // Task no encontrada
+      return of(false); // Task no encontrada
     }
 
     this.tasksSubject.next(filteredTasks);
     this.saveTasksToStorage();
 
-    return true;
+    return of(true);
   }
 
   /**
@@ -120,7 +158,9 @@ export class TaskService {
     return tasks.map((task) => ({
       ...task,
       tags: task.tagIds.map((id) => tagMap.get(id)).filter((tag): tag is Tag => tag !== undefined),
-      assignedUsers: task.assignedUserIds.map((id) => userMap.get(id)).filter((user): user is User => user !== undefined),
+      assignedUsers: task.assignedUserIds
+        .map((id) => userMap.get(id))
+        .filter((user): user is User => user !== undefined),
     }));
   }
 
@@ -134,11 +174,7 @@ export class TaskService {
 
   // ============ PRIVATE METHODS ============
   private createEnrichedTasksObservable(): Observable<PopulatedTask[]> {
-    return combineLatest([
-      this.tasks$,
-      this.tagService.tags$,
-      this.userService.users$,
-    ]).pipe(
+    return combineLatest([this.tasks$, this.tagService.tags$, this.userService.users$]).pipe(
       map(([tasks]) => this.enrichTasksWithTags(tasks))
     );
   }
@@ -155,7 +191,10 @@ export class TaskService {
 
   private saveTasksToStorage(): void {
     try {
-      globalThis.localStorage.setItem(this.TASKS_STORAGE_KEY, JSON.stringify(this.tasksSubject.value));
+      globalThis.localStorage.setItem(
+        this.TASKS_STORAGE_KEY,
+        JSON.stringify(this.tasksSubject.value)
+      );
     } catch (error) {
       console.error('Error saving tasks to storage:', error);
     }
@@ -165,25 +204,61 @@ export class TaskService {
     // Get projects created by TagService
     const projects = this.projectService.getProjectsSnapshot();
     const projectIds = projects.map((project) => project.id);
+
     // Get tags created by TagService
     const tags = this.tagService.getTagsSnapshot();
     const tagIds = tags.map((tag) => tag.id);
+
     // Get tags created by TagService
     const users = this.userService.getUsersSnapshot();
     const userIds = users.map((user) => user.id);
 
-    // Create mock task
-    if (tagIds.length >= 2) {
+    for (const task of MOCK_TASKS_DATA) {
+      //Get random project
+      const randomProjectId = projectIds[Math.floor(Math.random() * projectIds.length)];
+
+      // Get random tags
+      const assignedTagIds: string[] = [];
+      for (let i = 0; i < Math.floor(Math.random() * 6 + 1); i++) {
+        const randomTagId = tagIds[Math.floor(Math.random() * tagIds.length)];
+        if (!assignedTagIds.includes(randomTagId)) {
+          assignedTagIds.push(randomTagId);
+        }
+      }
+
+      // Get random users
+      const assignedUserIds: string[] = [];
+      for (let i = 0; i < Math.floor(Math.random() * 6 + 1); i++) {
+        const randomUserId = userIds[Math.floor(Math.random() * userIds.length)];
+        if (!assignedUserIds.includes(randomUserId)) {
+          assignedUserIds.push(randomUserId);
+        }
+      }
+
+      // Get random priority
+      const priorityValues = Object.values(EnumPriorities);
+      const randomPriorityIndex =
+        Math.floor(Math.random() * Object.keys(EnumPriorities).length);
+      const randomPriority = priorityValues[randomPriorityIndex];
+
+      // Get random status
+      const statusValues = Object.values(EnumStatus);
+      const randomStatusIndex = Math.floor(Math.random() * Object.keys(EnumStatus).length);
+      const randomStatus = statusValues[randomStatusIndex];
+
+      //Get random dates
+      const { pastDate, futureDate } = this.utilsService.generateRandomDates();
+
       this.createTask({
-        projectId: projectIds[0],
-        priority: EnumPriorities.HIGH,
-        title: 'End Angular task',
-        description: 'End Angular task manager project',
-        startDate: new Date().toDateString(),
-        endDate: new Date().toDateString(),
-        status: EnumStatus.TODO,
-        tagIds: [tagIds[0], tagIds[2]],
-        assignedUserIds: [userIds[0], userIds[2]],
+        projectId: randomProjectId,
+        priority: randomPriority,
+        title: task.title,
+        description: task.description,
+        startDate: pastDate.toDateString(),
+        endDate: futureDate.toDateString(),
+        status: randomStatus,
+        tagIds: assignedTagIds,
+        assignedUserIds: assignedUserIds,
       });
     }
   }

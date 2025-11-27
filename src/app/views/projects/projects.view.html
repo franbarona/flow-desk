@@ -20,10 +20,10 @@
 
 <app-modal
   [isOpen]="isModalOpen"
-  [title]="selectedProject && modalAction === 'upsert' ? 'Edit Project ' : !selectedProject && modalAction === 'upsert' ? 'New Project' : 'Delete project'"
+  [title]="modalTile"
   (closeModal)="closeModal()"
 >
-  @if (modalAction === 'upsert') {
+  @if (!modalAction || modalAction === 'update') {
   <app-project-form
     [existingProject]="selectedProject"
     (projectCreated)="onHandleCreatProject($event)"

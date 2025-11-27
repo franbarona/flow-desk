@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Project, ProjectRequest } from '../models/project.interface';
 import { UtilsService } from './utils.service';
 import { DropdownOptions } from '../models/utils.interface';
+import { MOCK_PROJECTS_DATA } from '../constants/mocks';
 
 @Injectable({
   providedIn: 'root',
@@ -144,8 +145,8 @@ export class ProjectService {
   }
 
   initializeProjectsSampleData(): void {
-    this.createProject({ name: 'Median', slug: 'median', color: 'pink' });
-    this.createProject({ name: 'Stratom', slug: 'stratom', color: 'gray' });
-    this.createProject({ name: 'Parisin', slug: 'parisin', color: 'yellow' });
+    for (const project of MOCK_PROJECTS_DATA) {
+      this.createProject(project);
+    }
   }
 }

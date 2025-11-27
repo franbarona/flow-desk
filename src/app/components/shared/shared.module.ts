@@ -12,6 +12,7 @@ import { ContextMenuComponent } from './context-menu/context-menu.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { DeleteConfirmationComponent } from './delete-confirmation/delete-confirmation.component';
 import { MultiselectDropdownComponent } from './multiselect-dropdown/multiselect-dropdown.component';
+import { TabPanelComponent, TabsComponent } from './tabs';
 // import { LoaderComponent } from './loader/loader.component'; TODO
 
 @NgModule({
@@ -26,7 +27,9 @@ import { MultiselectDropdownComponent } from './multiselect-dropdown/multiselect
     ContextMenuComponent,
     ColorPickerComponent,
     DeleteConfirmationComponent,
-    MultiselectDropdownComponent
+    MultiselectDropdownComponent,
+    TabsComponent,
+    TabPanelComponent
     // LoaderComponent, //TODO
   ],
   exports: [
@@ -40,7 +43,9 @@ import { MultiselectDropdownComponent } from './multiselect-dropdown/multiselect
     ContextMenuComponent,
     ColorPickerComponent,
     DeleteConfirmationComponent,
-    MultiselectDropdownComponent
+    MultiselectDropdownComponent,
+    TabsComponent,
+    TabPanelComponent
     // LoaderComponent, //TODO
   ]
 })

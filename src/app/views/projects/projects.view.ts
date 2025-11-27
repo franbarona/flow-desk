@@ -22,10 +22,16 @@ export class ProjectsView implements OnInit {
   private readonly destroy$ = new Subject<void>();
   projects: Project[] = [];
   selectedProject: Project | null = null;
-  modalAction: 'upsert' | 'delete' | null = null;
+  modalAction: 'update' | 'delete' | null = null;
 
   get isModalOpen() {
     return this.modalService.isModalOpen;
+  }
+
+  get modalTile() {
+    if (!this.modalAction) return 'Create project';
+    else if (this.modalAction === 'update') return 'Edit project';
+    else return 'Delete project';
   }
 
   ngOnInit(): void {
@@ -37,7 +43,6 @@ export class ProjectsView implements OnInit {
   }
 
   addNewProject() {
-    this.modalAction = 'upsert';
     this.modalService.openModal();
   }
 
@@ -48,7 +53,7 @@ export class ProjectsView implements OnInit {
     }
 
     this.selectedProject = { ...project };
-    this.modalAction = 'upsert';
+    this.modalAction = 'update';
     this.modalService.openModal();
   }
 
