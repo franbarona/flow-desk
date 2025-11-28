@@ -13,6 +13,10 @@ import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { DeleteConfirmationComponent } from './delete-confirmation/delete-confirmation.component';
 import { MultiselectDropdownComponent } from './multiselect-dropdown/multiselect-dropdown.component';
 import { TabPanelComponent, TabsComponent } from './tabs';
+import { DatepickerComponent } from './datepicker/datepicker.component';
+import { DropdownComponent } from './dropdown/dropdown.component';
+import { InputComponent } from './input/input.component';
+import { TextareaComponent } from './textarea/textarea.component';
 // import { LoaderComponent } from './loader/loader.component'; TODO
 
 @NgModule({
@@ -29,7 +33,11 @@ import { TabPanelComponent, TabsComponent } from './tabs';
     DeleteConfirmationComponent,
     MultiselectDropdownComponent,
     TabsComponent,
-    TabPanelComponent
+    TabPanelComponent,
+    DatepickerComponent,
+    DropdownComponent,
+    InputComponent,
+    TextareaComponent
     // LoaderComponent, //TODO
   ],
   exports: [
@@ -45,7 +53,11 @@ import { TabPanelComponent, TabsComponent } from './tabs';
     DeleteConfirmationComponent,
     MultiselectDropdownComponent,
     TabsComponent,
-    TabPanelComponent
+    TabPanelComponent,
+    DatepickerComponent,
+    DropdownComponent,
+    InputComponent,
+    TextareaComponent
     // LoaderComponent, //TODO
   ]
 })

@@ -1,0 +1,144 @@
+<div class="relative inline-block w-full">
+  <!-- Input trigger -->
+  <button
+    type="button"
+    (click)="toggle()"
+    class="w-full flex items-center justify-between cursor-pointer gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+  >
+    <span [class]="displayValue() ? 'text-gray-dark' : 'text-gray-light'">
+      {{ displayValue() || placeholder() }}
+    </span>
+    <app-icon [icon]="'calendar_today'" class="text-gray-light"></app-icon>
+  </button>
+
+  <!-- Calendar dropdown -->
+  @if (isOpen()) {
+  <div
+    class="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50 min-w-[320px]"
+  >
+    <!-- Header with navigation -->
+    <div class="flex items-center justify-between mb-4">
+      <!-- Year/Month backward -->
+      <div class="flex gap-1">
+        <button
+          type="button"
+          (click)="previousYear()"
+          class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          (click)="previousMonth()"
+          class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Current month/year -->
+      <span class="text-gray-800 font-medium">{{ monthName() }}</span>
+
+      <!-- Year/Month forward -->
+      <div class="flex gap-1">
+        <button
+          type="button"
+          (click)="nextMonth()"
+          class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          (click)="nextYear()"
+          class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 5l7 7-7 7M5 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Weekday headers -->
+    <div class="grid grid-cols-7 gap-1 mb-2">
+      @for (day of weekDays; track day) {
+      <div class="text-center text-sm text-gray-500 font-medium py-2">
+        {{ day }}
+      </div>
+      }
+    </div>
+
+    <!-- Calendar days -->
+    <div class="grid grid-cols-7 gap-1">
+      @for (day of calendarDays(); track day.date.getTime()) {
+      <button
+        type="button"
+        (click)="selectDay(day)"
+        [class]="
+          'w-10 h-10 flex items-center justify-center text-sm rounded-lg transition-colors ' +
+          (day.isSelected
+            ? 'bg-gray-900 text-white'
+            : day.isToday
+            ? 'border border-gray-300 text-gray-900'
+            : day.isCurrentMonth
+            ? 'text-gray-700 hover:bg-gray-100'
+            : 'text-gray-400 hover:bg-gray-50')
+        "
+      >
+        {{ day.dayNumber }}
+      </button>
+      }
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex gap-3 mt-4 pt-4 border-t border-gray-100">
+      <button
+        type="button"
+        (click)="clearDate()"
+        class="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+      >
+        Delete
+      </button>
+      <button
+        type="button"
+        (click)="selectToday()"
+        class="flex-1 px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+      >
+        Today
+      </button>
+    </div>
+  </div>
+  }
+</div>
+
+<!-- Backdrop to close on outside click -->
+@if (isOpen()) {
+<div class="fixed inset-0 z-40" (click)="close()"></div>
+}

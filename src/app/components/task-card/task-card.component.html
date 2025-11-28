@@ -4,12 +4,12 @@
     <div class="relative h-10">
       @for (assignedUser of task.assignedUsers; track $index) {
       <div
-        class="absolute w-10 rounded-full border-2 border-white overflow-hidden"
-        [style.left.px]="$index * 20"
+        class="absolute w-10 rounded-full shadow-md overflow-hidden"
+        [style.left.px]="$index * 25"
         title="{{assignedUser.name}} {{assignedUser.surnames}}"
       >
         @if (assignedUser?.avatarUrl) {
-        <!-- <img src="{{ assignedUser.avatarUrl }}" alt="" /> -->
+        <img src="{{ assignedUser.avatarUrl }}" alt="" />
         } @else {
         <div class="bg-zinc-800">
           {{ assignedUser.name.charAt(0) }}

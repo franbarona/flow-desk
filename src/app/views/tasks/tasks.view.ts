@@ -140,6 +140,7 @@ export class TasksView implements OnInit, OnDestroy {
   onTaskUpdated(updatedTask: UpdateTaskRequest) {
     const taskId = updatedTask.id;
     const updatedTaskData: Partial<Omit<PopulatedTask, 'id'>> = {
+      projectId: updatedTask.projectId,
       title: updatedTask.title,
       description: updatedTask.description,
       status: updatedTask.status,

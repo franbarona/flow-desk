@@ -32,7 +32,7 @@ export class TableComponent<T = any> implements OnInit, OnChanges {
   @Output() searchChange = new EventEmitter<string>();
 
   // Events
-  @Output() rowClick = new EventEmitter<{ row: T; index: number }>();
+  @Output() rowClick = new EventEmitter<{ row: T; index?: number }>();
   @Output() columnSort = new EventEmitter<{ column: TableColumn<T>; direction: 'asc' | 'desc' }>();
 
   // Custom template cells

@@ -1,4 +1,4 @@
-<app-table [data]="users" [columns]="columns" [actions]="actions">
+<app-table [data]="users" [columns]="columns" [actions]="actions" (rowClick)="editUser.emit($event.row)">
   <ng-template #idTemplate let-value="value" let-row="row">
     <span
       class="items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 max-w-[5em] truncate"

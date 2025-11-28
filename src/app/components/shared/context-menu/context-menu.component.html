@@ -1,6 +1,6 @@
 @if (isVisible) {
 <div
-  class="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-48 z-50 animate-in fade-in-0 zoom-in-95 duration-200"
+  class="fixed bg-white rounded-lg shadow-lg border border-gray-200 min-w-48 z-50 animate-in fade-in-0 zoom-in-95 duration-200 overflow-hidden"
   [style.top.px]="position.y"
   [style.left.px]="position.x"
   #menuElement
@@ -15,11 +15,11 @@
     <!-- Menu options -->
     @if(!action.separator) {
     <button
-      class="w-full px-4 py-2 text-left text-sm flex items-center gap-3 transition-colors duration-150 cursor-pointer"
+      class="w-full px-4 py-3 text-left text-sm flex items-center gap-3 transition-colors duration-150 cursor-pointer"
       [class.text-gray-400]="action.disabled"
       [class.cursor-not-allowed]="action.disabled"
       [class.text-gray-700]="!action.disabled"
-      [class.hover:bg-amber-100]="!action.disabled"
+      [class.hover:bg-[#F6F5E1]]="!action.disabled"
       [disabled]="action.disabled"
       (click)="onActionClick(action)"
     >

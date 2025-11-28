@@ -1,0 +1,52 @@
+<div class="relative inline-block min-w-[200px] w-full">
+  <!-- Trigger button -->
+  <button
+    type="button"
+    (click)="toggle()"
+    class="w-full cursor-pointer flex items-center justify-between gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+  >
+    <span [class]="displayValue() ? 'text-gray-700' : 'text-gray-400'">
+      @if(displayValue()) {
+      {{ displayValue() | titlecase }}
+      } @else {
+      {{ placeholder() }}
+      }
+    </span>
+    <app-icon
+      [icon]="'keyboard_arrow_down'"
+      [class.rotate-180]="isOpen()"
+      class="text-gray-light transition-transform"
+    ></app-icon>
+  </button>
+
+  <!-- Dropdown panel -->
+  @if (isOpen()) {
+  <div
+    class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-[300px] overflow-y-auto"
+  >
+    @for (option of options(); track option) {
+    <button
+      type="button"
+      (click)="selectOption(option)"
+      [class]="
+        'w-full px-4 py-3 text-left text-sm transition-colors cursor-pointer ' +
+        (isSelected(option) ? 'bg-gray-600 text-white' : 'text-gray-700 hover:bg-gray-100')
+      "
+    >
+      @if (optionTemplate()) {
+      <ng-container *ngTemplateOutlet="optionTemplate()!; context: { $implicit: option }" />
+      } @else {
+      {{ getOptionLabel(option) | titlecase }}
+      }
+    </button>
+    } @empty {
+    <div class="px-4 py-2 text-sm text-gray-400">No available options</div>
+    }
+  </div>
+  }
+</div>
+
+<!-- Backdrop to close on outside click -->
+@if (isOpen()) {
+<div class="fixed inset-0 z-40" (click)="close()"></div>
+}
