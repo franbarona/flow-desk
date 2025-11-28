@@ -103,7 +103,6 @@ export class SidenavComponent implements OnInit {
 
     this.subscription.add(
       combineLatest([route$, this.projectService.projects$]).subscribe(([url, projects]) => {
-
         this.currentRoute = url;
 
         this.projectsSubItems = projects.map((project) => ({
@@ -123,16 +122,19 @@ export class SidenavComponent implements OnInit {
   // ✅ Solo para proyectos (subitems)
   navigateToProject(slug: string) {
     this.router.navigate(['/project', slug]);
+    if (!this.isDesktopSize) this.closeSidenav();
   }
 
   // ✅ Para rutas normales
   navigateToRoute(route: string, event?: Event) {
     event?.stopPropagation();
     this.router.navigate([route]);
+    if (!this.isDesktopSize) this.closeSidenav();
   }
 
   newItemAction() {
     this.modalService.openModal();
+    if (!this.isDesktopSize) this.closeSidenav();
   }
 
   isProjectActive(slug: string): boolean {

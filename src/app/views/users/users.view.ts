@@ -10,8 +10,7 @@ import { UserFormComponent } from '../../components/user-form/user-form.componen
 @Component({
   selector: 'app-users',
   imports: [SharedModule, UsersTableComponent, UserFormComponent],
-  templateUrl: './users.view.html',
-  styleUrl: './users.view.scss',
+  templateUrl: './users.view.html'
 })
 export class UsersView implements OnInit {
   private readonly userService = inject(UserService);
