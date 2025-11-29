@@ -33,7 +33,6 @@
     "@angular/router": "^20.3.0",
     "@angular/ssr": "^20.3.9",
     "@tailwindcss/postcss": "^4.1.17",
-    "bootstrap-icons": "^1.13.1",
     "express": "^5.1.0",
     "nanoid": "^5.1.6",
     "postcss": "^8.5.6",
