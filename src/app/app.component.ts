@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, NgZone, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarService } from './services/sidebar.service';
 import { SharedModule } from './components/shared/shared.module';
@@ -8,20 +8,26 @@ import { TagService } from './services/tag.service';
 import { TaskService } from './services/task.service';
 import { ProjectService } from './services/project.service';
 import { UserService } from './services/user.service';
+import { SplashComponent } from './components/splash/splash.component';
+import { SPLASH_DURATION } from './constants/constants';
+import { StorageService } from './services/storage.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SharedModule, SidenavComponent],
+  imports: [RouterOutlet, SharedModule, SidenavComponent, SplashComponent],
   templateUrl: './app.component.html',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   sidebarService = inject(SidebarService);
   windowSizeService = inject(WindowSizeService);
+  private readonly ngZone = inject(NgZone);
   private readonly projectService = inject(ProjectService);
   private readonly tagService = inject(TagService);
   private readonly userService = inject(UserService);
   private readonly taskService = inject(TaskService);
+  private readonly storage = inject(StorageService);
+  showSplash: boolean = false;
 
   constructor() {
     // Init mock data if localStorage is empty
@@ -40,6 +46,24 @@ export class AppComponent {
     if (globalThis.localStorage?.getItem('tasks') === null) {
       this.taskService.initializeTasksSampleData();
     }
+  }
+
+  ngOnInit(): void {
+    if (this.storage.getItem('initialized') === null) {
+      this.showSplashAnimation();
+    }
+  }
+
+  showSplashAnimation(): void {
+    this.showSplash = true;
+    this.ngZone.runOutsideAngular(() => {
+      setTimeout(() => {
+        this.ngZone.run(() => {
+          this.showSplash = false;
+          this.storage.setItem('initialized', 'true');
+        });
+      }, SPLASH_DURATION);
+    });
   }
 
   get isDesktopSize() {

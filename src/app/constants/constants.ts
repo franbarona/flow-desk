@@ -1,5 +1,7 @@
 import { Column } from '../models/task.interface';
 
+export const SPLASH_DURATION: number = 4000;
+
 export const ROUTE_MAP = [
   { template: '/project/{id}', label: 'task' },
   { template: '/projects', label: 'project' },
