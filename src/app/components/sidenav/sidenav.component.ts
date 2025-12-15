@@ -22,7 +22,6 @@ interface MenuItem {
 @Component({
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
-  styleUrls: ['./sidenav.component.scss'],
   imports: [SharedModule, RouterModule],
 })
 export class SidenavComponent implements OnInit {
