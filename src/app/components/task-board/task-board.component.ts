@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { User } from '../../models/user.interface';
 import { Tag } from '../../models/tag.interface';
-import { Column, PopulatedTask, UpdateTaskRequest, UpdateTaskStatusRequest } from '../../models/task.interface';
+import { Column, PopulatedTask, UpdateTaskStatusRequest } from '../../models/task.interface';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import { Subject } from 'rxjs';
 import { SharedModule } from '../shared/shared.module';

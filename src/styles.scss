@@ -1,5 +1,5 @@
 @use "tailwindcss";
-
+@import 'intro.js/introjs.css';
 
 :root {
   font-family: "Inter", sans-serif;
@@ -470,4 +470,62 @@
   .text-black-dark {
     @apply text-black;
   }
+}
+
+// Customize tour guide Elements
+.introjs-tooltip {
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: auto;
+  min-width: 25vw;
+  max-width: 90vw;
+}
+
+.introjs-tooltiptext {
+  padding: 20px;
+  padding-top: 5px;
+  text-align: center;
+}
+
+.introjs-button {
+  text-shadow: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: medium;
+  border: none;
+}
+
+
+.introjs-tooltipbuttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.introjs-nextbutton, .introjs-nextbutton:focus {
+  background-color: oklch(89.7% 0.196 126.665);
+  border: none;
+  box-shadow: none;
+  display: flex;
+  gap: .5rem;
+}
+
+.introjs-nextbutton:hover {
+  background-color: oklch(84.1% 0.238 128.85);
+}
+
+.introjs-nextbutton::after {
+  content: 'arrow_forward_ios';
+  font-family: 'Material Symbols Outlined';
+}
+
+.introjs-prevbutton {
+  background-color: oklch(92.8% 0.006 264.531);
+  display: flex;
+  gap: .5rem;
+}
+
+.introjs-prevbutton::before {
+  content: 'arrow_back_ios_new';
+  font-family: 'Material Symbols Outlined';
 }

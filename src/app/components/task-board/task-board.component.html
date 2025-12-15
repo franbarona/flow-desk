@@ -1,7 +1,9 @@
 <!-- Main container -->
 <div class="h-full w-full text-neutral-50">
   <!-- Board -->
-  <div class="h-full w-full flex flex-col md:flex-row justify-center gap-10 overflow-auto px-12 pb-12">
+  <div
+    class="h-full w-full flex flex-col md:flex-row justify-center gap-10 overflow-auto px-12 pb-12"
+  >
     <!-- Columns -->
     @for (column of columns; track $index) {
     <div class="flex-1 shrink-0">
@@ -44,6 +46,7 @@
           <div class="mb-2" [attr.data-task-id]="task.id">
             <!-- Card -->
             <div
+              id="kanban-section"
               draggable="true"
               (dragstart)="onDragStart($event, task)"
               (click)="openTaskModal(task)"
@@ -66,10 +69,10 @@
     }
 
     <!-- Delete -->
-    <div class="hidden lg:fixed bottom-5 right-5 bg-white h-20 w-20 group">
+    <div class="hidden lg:block fixed bottom-5 right-5 bg-white h-20 w-20 group">
       <div class="absolute z-10 h-full w-full shrink-0 grid place-content-center">
         @if (activeDeleteForever) {
-          <app-icon [icon]="'delete_forever'" [size]="30" class="animate-ping text-red" ></app-icon>
+        <app-icon [icon]="'delete_forever'" [size]="30" class="animate-ping text-red"></app-icon>
         }
       </div>
       <div
@@ -83,7 +86,7 @@
         (drop)="onDrop($event)"
       >
         @if (!activeDeleteForever) {
-          <app-icon [icon]="'delete'" [size]="30"></app-icon>
+        <app-icon [icon]="'delete'" [size]="30"></app-icon>
         }
       </div>
     </div>

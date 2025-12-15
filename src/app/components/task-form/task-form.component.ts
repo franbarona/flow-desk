@@ -80,18 +80,22 @@ export class TaskFormComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    // if (changes['projectId']) {
+    //   this.taskForm.patchValue({ project: this.projectId }); // En lugar de setValue
+    // }
     if (this.existingTask) {
       this.isEditMode = true;
       this.loadMasterData();
       this.populateFormWithTask(this.existingTask);
     } else {
       this.isEditMode = false;
-      this.loadMasterData();
       this.resetForm();
+      this.loadMasterData();
     }
   }
 
   loadMasterData() {
+    this.taskForm.controls['project'].setValue(this.projectId);
     zip(
       this.projectService.getProjectOptions(),
       this.utilsService.getPriorityOptions(),
@@ -107,7 +111,7 @@ export class TaskFormComponent implements OnInit, OnChanges {
 
   private createForm(): FormGroup {
     return this.fb.group({
-      project: [null],
+      project: [this.projectId, [Validators.required]],
       priority: [EnumPriorities.LOW, [Validators.required]],
       title: ['', [Validators.required, Validators.minLength(3)]],
       status: [EnumStatus.TODO, [Validators.required]],
@@ -199,6 +203,10 @@ export class TaskFormComponent implements OnInit, OnChanges {
     if (event.target === event.currentTarget) {
       this.closeModal();
     }
+  }
+
+  getProjectNameById(id: string) {
+    return this.projectOptions.find(project => project.id === id)?.name;
   }
 
   // Validation helpers

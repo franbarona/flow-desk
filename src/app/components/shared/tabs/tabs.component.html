@@ -2,6 +2,7 @@
   <div class="flex border-b border-gray-200 sticky top-19 z-5 bg-main" role="tablist">
     @for (tab of tabs; track tab.id) {
     <button
+      id="tabs-section"
       type="button"
       role="tab"
       (click)="selectTab(tab.id)"

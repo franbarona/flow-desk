@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
 import { ProjectService } from '../../services/project.service';
 import { Subject, takeUntil } from 'rxjs';
 import {
@@ -10,15 +10,17 @@ import { ProjectsTableComponent } from '../../components/projects-table/projects
 import { ProjectFormComponent } from '../../components/project-form/project-form.component';
 import { ModalService } from '../../services/modal.service';
 import { SharedModule } from '../../components/shared/shared.module';
+import { TourService } from '../../services/tour.service';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.view.html',
   imports: [SharedModule, ProjectsTableComponent, ProjectFormComponent],
 })
-export class ProjectsView implements OnInit {
+export class ProjectsView implements OnInit, AfterViewInit {
   private readonly projectService = inject(ProjectService);
   private readonly modalService = inject(ModalService);
+  private readonly tourService = inject(TourService);
   private readonly destroy$ = new Subject<void>();
   projects: Project[] = [];
   selectedProject: Project | null = null;
@@ -40,6 +42,12 @@ export class ProjectsView implements OnInit {
       .getProjects()
       .pipe(takeUntil(this.destroy$))
       .subscribe((projects) => (this.projects = projects));
+  }
+
+  ngAfterViewInit() {
+    if (!localStorage.getItem('tourCompleted')) {
+      this.initializeTourAndStart();
+    }
   }
 
   addNewProject() {
@@ -68,9 +76,6 @@ export class ProjectsView implements OnInit {
     this.modalService.openModal();
   }
 
-  /**
-   * Handles creation of new projects
-   */
   onHandleCreatProject(projectRequest: CreateProjectRequest) {
     this.projectService
       .createProject(projectRequest)
@@ -78,11 +83,9 @@ export class ProjectsView implements OnInit {
       .subscribe({
         next: (newProject) => {
           console.log('Project created successfully:', newProject);
-          // You can add a success notification here
         },
         error: (error) => {
           console.error('Error creating project:', error);
-          // You can add error handling/notification here
         },
       });
   }
@@ -127,5 +130,27 @@ export class ProjectsView implements OnInit {
     this.selectedProject = null;
     this.modalAction = null;
     this.modalService.closeModal();
+  }
+
+  private async initializeTourAndStart() {
+    const tourSteps = [
+      {
+        intro: 'Welcome to FlowDesk! <br/> FlowDesk is a task and project management tool. <br/> Create projects, organize tasks, and collaborate seamlessly all in one place',
+      },
+      {
+        element: '#create-project-section',
+        intro: 'Create new projects by clicking here.',
+        position: 'left',
+        disableInteraction: true
+      },
+      {
+        element: '#project-list-section',
+        intro: 'This is your project list. <br/> Click on any project to view its tasks.',
+        position: 'bottom'
+      },
+    ];
+
+    await this.tourService.initializeTour(tourSteps);
+    await this.tourService.startTour();
   }
 }

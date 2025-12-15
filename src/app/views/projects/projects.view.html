@@ -4,11 +4,12 @@
     <button
       class="px-4 py-2.5 bg-lime-300 rounded-md cursor-pointer shadow-xs hover:shadow-lg hover:shadow-lime-100 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center gap-2"
       (click)="addNewProject()"
+      id="create-project-section"
     >
       <app-icon [icon]="'add'" /> Add new project
     </button>
   </div>
-  <div>
+  <div id="project-list-section">
     <app-projects-table
       [projects]="projects"
       (editProject)="openProjectModal($event)"

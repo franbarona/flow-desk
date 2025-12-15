@@ -1,10 +1,15 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Project } from '../../models/project.interface';
 import { User } from '../../models/user.interface';
 import { Tag } from '../../models/tag.interface';
-import { CreateTaskRequest, PopulatedTask, UpdateTaskRequest, UpdateTaskStatusRequest } from '../../models/task.interface';
+import {
+  CreateTaskRequest,
+  PopulatedTask,
+  UpdateTaskRequest,
+  UpdateTaskStatusRequest,
+} from '../../models/task.interface';
 import { EnumStatus } from '../../constants/constants';
 import { ProjectService } from '../../services/project.service';
 import { UserService } from '../../services/user.service';
@@ -15,19 +20,21 @@ import { TasksBacklogTableComponent } from '../../components/tasks-backlog-table
 import { TaskFormComponent } from '../../components/task-form/task-form.component';
 import { SharedModule } from '../../components/shared/shared.module';
 import { TaskBoardComponent } from '../../components/task-board/task-board.component';
+import { TourService } from '../../services/tour.service';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.view.html',
   imports: [SharedModule, TaskBoardComponent, TasksBacklogTableComponent, TaskFormComponent],
 })
-export class TasksView implements OnInit, OnDestroy {
+export class TasksView implements OnInit, AfterViewInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly projectService = inject(ProjectService);
   private readonly userService = inject(UserService);
   private readonly tagService = inject(TagService);
   private readonly taskService = inject(TaskService);
   private readonly modalService = inject(ModalService);
+  private readonly tourService = inject(TourService);
   private readonly destroy$ = new Subject<void>();
 
   project!: Project;
@@ -68,6 +75,47 @@ export class TasksView implements OnInit, OnDestroy {
         this.loading = false;
       });
     });
+  }
+
+  ngAfterViewInit() {
+    if (!localStorage.getItem('tourCompleted')) {
+      this.initializeTourAndStart();
+    }
+
+    this.tourService.onTourCompleted(() => {
+      localStorage.setItem('tourCompleted', 'true');
+    });
+  }
+
+  private async initializeTourAndStart() {
+    const tourSteps = [
+      {
+        intro:
+          'This is the Kanban view. Here you will find all the project`s tasks organized by status.',
+      },
+      {
+        element: '#tabs-section',
+        intro: 'Switch to the Backlog view using this tab to see all your tasks in a list format.',
+        position: 'bottom',
+        disableInteraction: true,
+      },
+      {
+        element: '#create-task-section',
+        intro: 'Create new tasks by clicking here.',
+        position: 'left',
+        disableInteraction: true,
+      },
+      {
+        element: '#kanban-section',
+        intro:
+          'Click on a task to edit it. <br/> You can also drag it to another column to change its status.',
+        position: 'right',
+        disableInteraction: true,
+      },
+    ];
+
+    await this.tourService.initializeTour(tourSteps);
+    await this.tourService.startTour();
   }
 
   ngOnDestroy() {
@@ -118,9 +166,6 @@ export class TasksView implements OnInit, OnDestroy {
     this.modalService.openModal();
   }
 
-  /**
-   * Handles creation of new tasks
-   */
   onTaskCreated(taskRequest: CreateTaskRequest) {
     this.taskService
       .createTask(taskRequest)
@@ -128,11 +173,9 @@ export class TasksView implements OnInit, OnDestroy {
       .subscribe({
         next: (newTask) => {
           console.log('Task created successfully:', newTask);
-          // You can add a success notification here
         },
         error: (error) => {
           console.error('Error creating task:', error);
-          // You can add error handling/notification here
         },
       });
   }
@@ -158,11 +201,9 @@ export class TasksView implements OnInit, OnDestroy {
       .subscribe({
         next: (newTask) => {
           console.log('Task updated successfully:', newTask);
-          // You can add a success notification here
         },
         error: (error) => {
           console.error('Error creating task:', error);
-          // You can add error handling/notification here
         },
       });
   }
@@ -176,11 +217,9 @@ export class TasksView implements OnInit, OnDestroy {
       .subscribe({
         next: (newTask) => {
           console.log('Task updated successfully:', newTask);
-          // You can add a success notification here
         },
         error: (error) => {
           console.error('Error creating task:', error);
-          // You can add error handling/notification here
         },
       });
   }
