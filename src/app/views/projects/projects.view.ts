@@ -11,6 +11,7 @@ import { ProjectFormComponent } from '../../components/project-form/project-form
 import { ModalService } from '../../services/modal.service';
 import { SharedModule } from '../../components/shared/shared.module';
 import { TourService } from '../../services/tour.service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-projects',
@@ -21,6 +22,7 @@ export class ProjectsView implements OnInit, AfterViewInit {
   private readonly projectService = inject(ProjectService);
   private readonly modalService = inject(ModalService);
   private readonly tourService = inject(TourService);
+  private readonly storage = inject(StorageService);
   private readonly destroy$ = new Subject<void>();
   projects: Project[] = [];
   selectedProject: Project | null = null;
@@ -45,7 +47,7 @@ export class ProjectsView implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (!localStorage.getItem('tourCompleted')) {
+    if (!this.storage.getItem('tourCompleted')) {
       this.initializeTourAndStart();
     }
   }

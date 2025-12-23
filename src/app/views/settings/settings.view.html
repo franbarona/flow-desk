@@ -1,5 +1,5 @@
 <app-title title="Settings"></app-title>
-<div class="w-[90%] mx-auto mt-10">
+<div class="w-[90%] mt-10 flex flex-col space-y-10 items-center">
   <div class="w-full flex flex-col lg:flex-row gap-8 justify-center items-center">
     <div class="w-32 h-32 bg-gray-300 rounded-full overflow-hidden">
       <img src="users/user2.jpg" alt="user-settings" />
@@ -9,4 +9,10 @@
       <p class="text-lg text-gray-500">user@email.com</p>
     </div>
   </div>
+  <app-button
+    label="Repeat Tutorial"
+    type="button"
+    [style]="'primary'"
+    (action)="repeatTutorial()"
+  ></app-button>
 </div>

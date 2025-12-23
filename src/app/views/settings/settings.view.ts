@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../components/shared/shared.module';
+import { StorageService } from '../../services/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -7,6 +9,11 @@ import { SharedModule } from '../../components/shared/shared.module';
   imports: [SharedModule],
 })
 export class SettingsView {
+    private readonly router = inject(Router);
+    private readonly storage = inject(StorageService);
 
-
+  repeatTutorial() {
+    this.storage.removeItem('tourCompleted');
+    this.router.navigate(['/projects'])
+  }
 }

@@ -10,7 +10,6 @@ import { ProjectService } from './services/project.service';
 import { UserService } from './services/user.service';
 import { SplashComponent } from './components/splash/splash.component';
 import { SPLASH_DURATION } from './constants/constants';
-import { StorageService } from './services/storage.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +25,6 @@ export class AppComponent implements OnInit {
   private readonly tagService = inject(TagService);
   private readonly userService = inject(UserService);
   private readonly taskService = inject(TaskService);
-  private readonly storage = inject(StorageService);
   showSplash: boolean = false;
 
   constructor() {
@@ -49,7 +47,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.storage.getItem('initialized') === null) {
+    if (globalThis.sessionStorage?.getItem('initialized') === null) {
       this.showSplashAnimation();
     }
   }
@@ -60,7 +58,7 @@ export class AppComponent implements OnInit {
       setTimeout(() => {
         this.ngZone.run(() => {
           this.showSplash = false;
-          this.storage.setItem('initialized', 'true');
+          globalThis.sessionStorage?.setItem('initialized', 'true');
         });
       }, SPLASH_DURATION);
     });
